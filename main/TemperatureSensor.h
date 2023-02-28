@@ -17,15 +17,14 @@ class TemperatureSensor
     }
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
-    
+
   protected:
     // Wykonuje pomiary temperatury i filtruje dolnoprzepustowo z określoną częstotliwością
     void measureTemperature();
-    // Oszacowuje rzeczywistą temperaturę płyty na podstawie zebranych pomiarów
-    void calculateRealTemperature();
+    // Zwraca oszacowaną różnicę temperatur płyty względem otoczenia na podstawie zebranych pomiarów
+    int calculateRelativeTemperature();
 
     // Zmienne przechowujące aktualne wartości temperatury
-    int real_temperature_ = 20;
     static const short int SHORT_MEASUREMENTS_ARRAY_SIZE_ = TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD;
     static const short int LONG_MEASUREMENTS_ARRAY_SIZE_ = TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD;
     float long_temperature_measurements_[LONG_MEASUREMENTS_ARRAY_SIZE_];
@@ -86,7 +85,7 @@ void TemperatureSensor::measureTemperature()
   ++long_measuring_counter_;
 }
 
-void TemperatureSensor::calculateRealTemperature()
+int TemperatureSensor::calculateRelativeTemperature()
 {
   const int LOWER_TEMPERATURE_LIMIT = 10;
   const int HIGHER_TEMPERATURE_LIMIT = 500;
@@ -113,9 +112,9 @@ void TemperatureSensor::calculateRealTemperature()
     ++table_size;
   }
 
-//  // Cyfrowa filtracja szumów poprzez filtr medianowy
-//  if (table_size < LONG_MEASUREMENTS_ARRAY_SIZE_ / 2.0)
-//    reportError("2");
+  //  // Cyfrowa filtracja szumów poprzez filtr medianowy
+  //  if (table_size < LONG_MEASUREMENTS_ARRAY_SIZE_ / 2.0)
+  //    reportError("2");
 
   float quantile_position = QUANTILE * (table_size - 1);
   unsigned int lower_index = floor(quantile_position);
@@ -128,5 +127,5 @@ void TemperatureSensor::calculateRealTemperature()
                    + (quantile_position - lower_index) * long_temperature_measurements_[higher_index];
 
   // Dodatkowa korekta ustawionych mechanicznie wzmocnień wzmacniaczy sygnałów temperatury
-  real_temperature_ = round(TUNING_FACTOR_ * ( signal_value - SENSOR_OFFSET_));
+  return round(TUNING_FACTOR_ * ( signal_value - SENSOR_OFFSET_));
 }

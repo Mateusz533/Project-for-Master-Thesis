@@ -38,7 +38,8 @@ void testForceSensor()
   float signal_value = 0;
   int min_value = 0;
   int max_value = 0;
-  for (int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE; i++) {
+  for (int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE; i++)
+  {
     signal_value += force_measurements[i];
     if (min_value > force_measurements[i])
       min_value = force_measurements[i];

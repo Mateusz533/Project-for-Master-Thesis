@@ -1,4 +1,5 @@
 #pragma once
 
-// Wyświetla komunikat o błędzie o zadanym numerze, awaryjnie wyłącza grzałki oraz zatrzymuje program
+/*Funkcja globalna przekazująca komunikat o błędzie o zadanym numerze,
+  umożliwiając reakcję systemu na błąd w dowolnym miejscu kodu*/
 void reportError(String code);

@@ -37,6 +37,7 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
     // Zmienne przechowujące zadane wartości grzania
     bool is_heating_set_ = false;
     int set_temperature_ = 200;
+    int real_temperature_ = 20;
     // Zmienne regulacji
     bool active_regulation_ = false;
     int temperature_deviation_ = 0;                                   // [K]
@@ -109,8 +110,7 @@ void HeatingPlate::run()
   if (long_measuring_counter_ == LONG_MEASUREMENTS_ARRAY_SIZE_)
   {
     long_measuring_counter_ = 0;
-    calculateRealTemperature();
-    real_temperature_ += ambient_temperature_;
+    real_temperature_ = ambient_temperature_ + calculateRelativeTemperature();
     regulateHeatingPower();
   }
 }
