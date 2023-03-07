@@ -17,8 +17,8 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
     }
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
-    // Pobiera od użytkownika polecania dotyczące zadanej temperatury oraz stanu grzania
-    void getCommands(const bool buttons[]);
+    // Wykonuje pobrane od użytkownika polecania dotyczące zadanej temperatury oraz stanu grzania
+    void executeCommands(const bool buttons[]);
     // Wyświetla dane dotyczące płyty grzewczej
     void getDataToDisplay(String& first_line, String& second_line);
     // Wykonuje wszystkie funkcje płyty z odpowiednimi dla nich częstotliwościami
@@ -40,9 +40,9 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
     int real_temperature_ = 20;
     // Zmienne regulacji
     bool active_regulation_ = false;
-    int temperature_deviation_ = 0;                                   // [K]
-    int temperature_derivative_ = 0;                                  // [K/s]
-    int temperature_integral_ = 0;                                    // [K*s]
+    int temperature_deviation_ = 0;                 // [K]
+    int temperature_derivative_ = 0;                // [K/s]
+    int temperature_integral_ = 0;                  // [K*s]
     // Wyświetlana nazwa grzałki
     const String DISPLAYED_NAME_;
     // Numer pinu przypisanego do grzałki
@@ -55,13 +55,12 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
 
 void HeatingPlate::init()
 {
-  pinMode(PIN_TEMPERATURE_SENSOR_, INPUT);          // ustawienie czujnika temperatury jako wejście z napięciem zewnętrznym
-  digitalWrite(PIN_TEMPERATURE_SENSOR_, LOW);
+  TemperatureSensor::init();                        // konfiguracja czujnika temperatury
   pinMode(PIN_HEAT_SUPPLY_, OUTPUT);                // ustawienie kanału przekaźnika jako wyjście
   digitalWrite(PIN_HEAT_SUPPLY_, HIGH);             // początkowy stan wysoki odpowiada wyłączonemu kanałowi przekaźnika
 }
 
-void HeatingPlate::getCommands(const bool buttons[])
+void HeatingPlate::executeCommands(const bool buttons[])
 {
   if (buttons[UP] && !buttons[DOWN] && set_temperature_ < MAX_TEMPERATURE)
   {
@@ -161,7 +160,7 @@ int HeatingPlate::calculateRegulatedHeatingPower()
   if (!active_regulation_)
   {
     active_regulation_ = true;
-    for (int i = 0; i < CONVERSION_ARRAYS_SIZE_; i++)
+    for (unsigned int i = 1; i < CONVERSION_ARRAYS_SIZE_; i++)
     {
       if (set_temperature_ < TEMPERATURE_VALUES_[i])
       {

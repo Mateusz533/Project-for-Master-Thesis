@@ -14,8 +14,8 @@ class ForceSensor : public SystemElement
     }
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
-    // Pobiera od użytkownika polecania dotyczące wartości punktu zerowego czujnika siły
-    void getCommands(const bool buttons[]);
+    // Wykonuje pobrane od użytkownika polecania dotyczące wartości punktu zerowego czujnika siły
+    void executeCommands(const bool buttons[]);
     // Wyświetla dane dotyczące czujnika siły
     void getDataToDisplay(String& first_line, String& second_line);
     // Wykonuje pomiar siły nacisku oraz uśrednia go z określoną częstotliwością
@@ -43,7 +43,7 @@ void ForceSensor::init()
   digitalWrite(PIN_FORCE_SENSOR_, LOW);
 }
 
-void ForceSensor::getCommands(const bool buttons[])
+void ForceSensor::executeCommands(const bool buttons[])
 {
   if (buttons[ACTION] && !is_overloaded_)
     force_offset_ = force_;
@@ -79,11 +79,11 @@ void ForceSensor::run()
 
   force_measuring_counter = 0;
   float signal_value = 0;
-  for (int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE_; i++)
+  for (unsigned int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE_; i++)
     signal_value += force_measurements_[i];
-  signal_value /= FORCE_MEASUREMENTS_ARRAY_SIZE_;           // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
+  signal_value /= FORCE_MEASUREMENTS_ARRAY_SIZE_;             // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
-  for (int i = 1; i < CONVERSION_ARRAYS_SIZE_; i++)         // konwersja bitów na Newtony
+  for (unsigned int i = 1; i < CONVERSION_ARRAYS_SIZE_; i++)  // konwersja bitów na Newtony
   {
     if (signal_value < SIGNAL_VALUES_[i])
     {

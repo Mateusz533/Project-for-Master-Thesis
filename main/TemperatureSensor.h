@@ -21,7 +21,7 @@ class TemperatureSensor
   protected:
     // Wykonuje pomiary temperatury i filtruje dolnoprzepustowo z określoną częstotliwością
     void measureTemperature();
-    // Zwraca oszacowaną różnicę temperatur płyty względem otoczenia na podstawie zebranych pomiarów
+    // Zwraca oszacowaną różnicę temperatur pomiędzy płytą a otoczeniem na podstawie zebranych pomiarów
     int calculateRelativeTemperature();
 
     // Zmienne przechowujące aktualne wartości temperatury
@@ -57,16 +57,16 @@ void TemperatureSensor::measureTemperature()
   short_measuring_counter_ = 0;
 
   // Sortowanie tablic przez wstawianie
-  for (int i = 0; i < SHORT_MEASUREMENTS_ARRAY_SIZE_; i++)
+  for (unsigned int i = 0; i < SHORT_MEASUREMENTS_ARRAY_SIZE_; i++)
   {
-    for (int j = i - 1; j >= 0; j--)
+    for (unsigned int j = i; j > 0; j--)
     {
-      if (short_temperature_measurements_[j] <= short_temperature_measurements_[j + 1])
+      if (short_temperature_measurements_[j - 1] <= short_temperature_measurements_[j])
         break;
 
-      int aux_var = short_temperature_measurements_[j + 1];
-      short_temperature_measurements_[j + 1] = short_temperature_measurements_[j];
-      short_temperature_measurements_[j] = aux_var;
+      unsigned int aux_var = short_temperature_measurements_[j];
+      short_temperature_measurements_[j] = short_temperature_measurements_[j - 1];
+      short_temperature_measurements_[j - 1] = aux_var;
     }
   }
 
@@ -87,27 +87,27 @@ void TemperatureSensor::measureTemperature()
 
 int TemperatureSensor::calculateRelativeTemperature()
 {
-  const int LOWER_TEMPERATURE_LIMIT = 10;
-  const int HIGHER_TEMPERATURE_LIMIT = 500;
+  const unsigned int LOWER_SIGNAL_LIMIT = 10;
+  const unsigned int HIGHER_SIGNAL_LIMIT = 500;
   const float QUANTILE = 0.5;
 
   // Sortowanie tablic przez wstawianie
-  int aux_var = 0;
+  unsigned int aux_var = 0;
   unsigned int table_size = 0;
-  for (int i = 0; i < LONG_MEASUREMENTS_ARRAY_SIZE_; i++)
+  for (unsigned int i = 0; i < LONG_MEASUREMENTS_ARRAY_SIZE_; i++)
   {
     aux_var = long_temperature_measurements_[i];
-    if (aux_var < LOWER_TEMPERATURE_LIMIT || aux_var > HIGHER_TEMPERATURE_LIMIT)
+    if (aux_var < LOWER_SIGNAL_LIMIT || aux_var > HIGHER_SIGNAL_LIMIT)
       continue;
 
     long_temperature_measurements_[table_size] = aux_var;
-    for (int j = table_size - 1; j >= 0; j--)
+    for (unsigned int j = table_size; j > 0; j--)
     {
-      if (long_temperature_measurements_[j] <= aux_var)
+      if (long_temperature_measurements_[j - 1] <= aux_var)
         break;
 
-      long_temperature_measurements_[j + 1] = long_temperature_measurements_[j];
-      long_temperature_measurements_[j] = aux_var;
+      long_temperature_measurements_[j] = long_temperature_measurements_[j - 1];
+      long_temperature_measurements_[j - 1] = aux_var;
     }
     ++table_size;
   }

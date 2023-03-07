@@ -19,7 +19,7 @@ class PushButton
     // Zwraca prawdę dla zbocza opadającego oraz fałsz w przypadku jego braku
     bool isReleased();
     // Zwraca prawdę dla wciśniętego przycisku przez żądaną liczbę cykli oraz fałsz w przeciwnym wypadku
-    bool isPressed(int min_pressing_time);
+    bool isPressed(unsigned int min_pressing_time);
     // Zeruje wszystkie zapamiętane stany przycisku
     void reset();
 
@@ -27,7 +27,7 @@ class PushButton
     // Zmienne przechowujące ostatnie stany przycisku
     bool currently_pressed_ = false;
     bool previously_pressed_ = false;
-    int time_of_continuous_pressing_ = 0;                   // czas ciągłego wciśnęcia mierzony liczbą cykli
+    unsigned int time_of_continuous_pressing_ = 0;          // czas ciągłego wciśnęcia mierzony liczbą cykli
     // Numer pinu przypisany do przycisku
     const short unsigned int PIN_;
 };
@@ -64,7 +64,7 @@ bool PushButton::isReleased()
     return false;
 }
 
-bool PushButton::isPressed(int min_pressing_time = 1)
+bool PushButton::isPressed(unsigned int min_pressing_time = 1)
 {
   if (time_of_continuous_pressing_ >= min_pressing_time)    // stan aktywowany trwającym naciśnięciem
     return true;

@@ -7,8 +7,8 @@ class SystemElement
   public:
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     virtual void init() = 0;
-    // Pobiera od użytkownika polecania na podstawie wciśniętych przycisków
-    virtual void getCommands(const bool buttons[]) = 0;
+    // Wykonuje pobrane od użytkownika polecania na podstawie wciśniętych przycisków
+    virtual void executeCommands(const bool buttons[]) = 0;
     // Wyświetla dane dotyczące tego elementu
     virtual void getDataToDisplay(String& first_line, String& second_line) = 0;
     // Wykonuje wszystkie funkcje elementu z odpowiednimi częstotliwościami

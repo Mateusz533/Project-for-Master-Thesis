@@ -14,8 +14,8 @@ class SettingsController : public SystemElement
     }
     // Nie wykonuje żadnej akcji
     void init();
-    // Pobiera od użytkownika polecania dotyczące parametrów globalnych
-    void getCommands(const bool buttons[]);
+    // Wykonuje pobrane od użytkownika polecania dotyczące parametrów globalnych
+    void executeCommands(const bool buttons[]);
     // Wyświetla dane dotyczące parametrów globalnych
     void getDataToDisplay(String& first_line, String& second_line);
     // Nie wykonuje żadnej akcji
@@ -32,7 +32,7 @@ void SettingsController::init()
   return;
 }
 
-void SettingsController::getCommands(const bool buttons[])
+void SettingsController::executeCommands(const bool buttons[])
 {
   if (buttons[UP] && !buttons[DOWN] && ambient_temperature_ < MAX_AMBIENT_TEMPERATURE_)
     ambient_temperature_ += AMBIENT_TEMPERATURE_RESOLUTION_;

@@ -34,9 +34,9 @@
 #define INTEGRAL_REGULATION_COEFFICIENT 0.105           // wg metody Z-N [W/(K*s)]
 
 // Tablica bitów do wyświetlenia symbolu stopnia na ekranie LCD
-uint8_t DEGREE[8] = { B00010, B00101, B00010, B00000, B00000, B00000, B00000, B00000 };
-const char DEGREE_SYMBOL_INDEX = 1;
+#define DEGREE_SYMBOL { B00010, B00101, B00010, B00000, B00000, B00000, B00000, B00000 }
+#define DEGREE_SYMBOL_INDEX '\1'
 
 // Enumerator dla przycisków
 enum Button : short unsigned int { UP = 0, DOWN = 1, LEFT = 2, RIGHT = 3, ACTION = 4 };
-const short unsigned int BUTTONS_NUMBER = 5;
+#define BUTTONS_NUMBER 5

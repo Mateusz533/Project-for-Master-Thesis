@@ -26,7 +26,7 @@ void testForceSensor()
 
   // Filtrowane
   static unsigned int force_measuring_counter = 0;
-  static const unsigned int FORCE_MEASUREMENTS_ARRAY_SIZE = 10;
+  static const unsigned int FORCE_MEASUREMENTS_ARRAY_SIZE = 20;
   static unsigned int force_measurements[FORCE_MEASUREMENTS_ARRAY_SIZE];
   force_measurements[force_measuring_counter] = analogRead(PIN_FORCE_SENSOR);
 
@@ -36,9 +36,9 @@ void testForceSensor()
 
   force_measuring_counter = 0;
   float signal_value = 0;
-  int min_value = 0;
-  int max_value = 0;
-  for (int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE; i++)
+  unsigned int min_value = 0;
+  unsigned int max_value = 0;
+  for (unsigned int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE; i++)
   {
     signal_value += force_measurements[i];
     if (min_value > force_measurements[i])
@@ -48,7 +48,7 @@ void testForceSensor()
   }
   signal_value /= FORCE_MEASUREMENTS_ARRAY_SIZE;           // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
-  int displayed_value = round(signal_value);
+  unsigned int displayed_value = round(signal_value);
   Serial.print(displayed_value);
   Serial.print(',');
   Serial.print(min_value);
