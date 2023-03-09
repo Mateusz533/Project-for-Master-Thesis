@@ -1,4 +1,4 @@
-#include <LiquidCrystal_I2C.h>                          // biblioteka obsługująca ekran z magistralą I2C
+#include <LiquidCrystal_I2C.h>    // biblioteka obsługująca ekran z magistralą I2C
 #include "configuration.h"
 #include "PushButton.h"
 #include "SystemElement.h"
@@ -10,16 +10,12 @@ class HeatingPress
 {
   public:
     // Konstruktor
-    HeatingPress(short unsigned int max_threads_number):
-      MAX_THREADS_NUMBER_ (max_threads_number)
+    HeatingPress(short unsigned int max_threads_number) :
+      MAX_THREADS_NUMBER_(max_threads_number)
     {
       // Utworzenie instancji dla każdego z przycisków
-      buttons_ = new PushButton[BUTTONS_NUMBER] {
-        PushButton(PIN_PB_UP),
-        PushButton(PIN_PB_DOWN),
-        PushButton(PIN_PB_LEFT),
-        PushButton(PIN_PB_RIGHT),
-        PushButton(PIN_PB_ACTION),
+      buttons_ = new PushButton[BUTTONS_NUMBER]{
+        PushButton(PIN_PB_UP), PushButton(PIN_PB_DOWN), PushButton(PIN_PB_LEFT), PushButton(PIN_PB_RIGHT), PushButton(PIN_PB_ACTION),
       };
 
       // Zarezerwowanie pamięci na każdy z wątków
@@ -68,11 +64,11 @@ class HeatingPress
 
 void HeatingPress::displayIntroduction()
 {
-  lcd_.setCursor(0, 0);                       // ustawienie kursora w pozycji 0,0 (pierwsza kolumna, pierwszy wiersz)
-  lcd_.print("Heating press");
-  lcd_.setCursor(0, 1);                       // ustawienie kursora w pozycji 0,1 (pierwsza kolumna, drugi wiersz)
-  lcd_.print("0-200N, 20-400");
-  lcd_.write(DEGREE_SYMBOL_INDEX);            // wyświetlenie symbolu stopnia
+  lcd_.setCursor(0, 0);               // ustawienie kursora w pozycji 0,0 (pierwsza kolumna, pierwszy wiersz)
+  lcd_.print("Heating press");        //
+  lcd_.setCursor(0, 1);               // ustawienie kursora w pozycji 0,1 (pierwsza kolumna, drugi wiersz)
+  lcd_.print("0-200N, 20-400");       //
+  lcd_.write(DEGREE_SYMBOL_INDEX);    // wyświetlenie symbolu stopnia
   lcd_.print("C");
   delay(1000);
   lcd_.clear();
@@ -87,21 +83,19 @@ void HeatingPress::displayIntroduction()
 void HeatingPress::init()
 {
   // Konfiguracja poszczególnych portów
-  for (unsigned int i = 0; i < BUTTONS_NUMBER; i++)   // przyciski
-    buttons_[i].init();
-  for (unsigned int i = 0; i < threads_number_; i++)  // czujniki nacisku, temperatury oraz przekaźnik
-    threads_[i]->init();
+  for (unsigned int i = 0; i < BUTTONS_NUMBER; ++i) buttons_[i].init();      // przyciski
+  for (unsigned int i = 0; i < threads_number_; ++i) threads_[i]->init();    // czujniki nacisku, temperatury oraz przekaźnik
 
   // Konfiguracja ekranu
-  lcd_.begin();                                       // inicjalizacja LCD
-  lcd_.backlight();                                   // załączenie podświetlenia
-  uint8_t degree[8] = DEGREE_SYMBOL;
-  lcd_.createChar(DEGREE_SYMBOL_INDEX, degree);       // utworzenie symbolu stopnia
-
-  displayIntroduction();                              // wyświetlenie informacji o urządzeniu
-
-  TCCR1B = (TCCR1B & B11111000) | B00000101;          // ustawienie częstotliwości PWM pinów 9 i 10 na 30.64 Hz
-  cycle_counter_ = millis() + CYCLE_PERIOD;           // ustawienie wartości licznika czasu
+  lcd_.begin();                                    // inicjalizacja LCD
+  lcd_.backlight();                                // załączenie podświetlenia
+  uint8_t degree[8] = DEGREE_SYMBOL;               //
+  lcd_.createChar(DEGREE_SYMBOL_INDEX, degree);    // utworzenie symbolu stopnia
+                                                   //
+  displayIntroduction();                           // wyświetlenie informacji o urządzeniu
+                                                   //
+  TCCR1B = (TCCR1B & B11111000) | B00000101;       // ustawienie częstotliwości PWM pinów 9 i 10 na 30.64 Hz
+  cycle_counter_ = millis() + CYCLE_PERIOD;        // ustawienie wartości licznika czasu
 
   /*KONFIGURACJA PORTU SZEREGOWEGO - WYŁĄCZNIE DO TESTÓW*/
   Serial.begin(9600);
@@ -109,8 +103,7 @@ void HeatingPress::init()
 
 void HeatingPress::addThread(SystemElement* new_thread)
 {
-  if (threads_number_ < MAX_THREADS_NUMBER_)
-    threads_[threads_number_++] = new_thread;
+  if (threads_number_ < MAX_THREADS_NUMBER_) threads_[threads_number_++] = new_thread;
 }
 
 void HeatingPress::readUserCommands()
@@ -128,14 +121,13 @@ void HeatingPress::readUserCommands()
     return;
   }
 
-  if (buttons_activity[LEFT])                       // przełączenie wyświetlanego okna
+  if (buttons_activity[LEFT])    // przełączenie wyświetlanego okna
     displayed_thread_id_ += threads_number_ - 1;
-  if (buttons_activity[RIGHT])
-    ++displayed_thread_id_;
+  if (buttons_activity[RIGHT]) ++displayed_thread_id_;
 
   displayed_thread_id_ %= threads_number_;
 
-  buttons_[UP].reset();                             // zresetowanie stanów przycisków przy zmianie okna
+  buttons_[UP].reset();    // zresetowanie stanów przycisków przy zmianie okna
   buttons_[DOWN].reset();
   buttons_[ACTION].reset();
 }
@@ -145,12 +137,10 @@ void HeatingPress::displayData()
   static const unsigned int REFRESH_COUNTER_OVERFLOW = SCREEN_REFRESH_PERIOD / CYCLE_PERIOD;
   static unsigned int refresh_counter = 0;
   ++refresh_counter;
-  if (refresh_counter < REFRESH_COUNTER_OVERFLOW && (buttons_[LEFT].isClicked() == buttons_[RIGHT].isClicked()))
-    return;
+  if (refresh_counter < REFRESH_COUNTER_OVERFLOW && (buttons_[LEFT].isClicked() == buttons_[RIGHT].isClicked())) return;
 
   refresh_counter = 0;
-  if (buttons_[LEFT].isClicked() != buttons_[RIGHT].isClicked())
-    lcd_.clear();
+  if (buttons_[LEFT].isClicked() != buttons_[RIGHT].isClicked()) lcd_.clear();
   String first_line, second_line;
   threads_[displayed_thread_id_]->getDataToDisplay(first_line, second_line);
   lcd_.setCursor(0, 0);
@@ -163,18 +153,14 @@ void HeatingPress::run()
 {
   // Wykonywanie programu z określoną częstotliwością
   long unsigned int timer = millis();
-  if (cycle_counter_ > timer + CYCLE_PERIOD)
-    reportError("0");
-  if (cycle_counter_ > timer)
-    return;
+  if (cycle_counter_ > timer + CYCLE_PERIOD) reportError("0");
+  if (cycle_counter_ > timer) return;
 
   cycle_counter_ += CYCLE_PERIOD;
-  if (cycle_counter_ < timer)
-    reportError("1");
+  if (cycle_counter_ < timer) reportError("1");
 
   // Pobranie stanu wejść, gdy stan niski oznacza wciśnięty przycisk
-  for (unsigned int i = 0; i < BUTTONS_NUMBER; i++)
-    buttons_[i].readSignal();
+  for (unsigned int i = 0; i < BUTTONS_NUMBER; ++i) buttons_[i].readSignal();
 
   // Odczyt interfejsu - działanie przycisków zależy od okna, dla którego zostały aktywowane
   readUserCommands();
@@ -189,8 +175,7 @@ void HeatingPress::run()
   //testAmplifier(A0, PIN_TEMPERATURE_SENSOR_TOP, 30);
 
   // Pomiar nacisku oraz wykonanie wszystkich okresowych działań obu płyt grzewczych
-  for (unsigned int i = 0; i < threads_number_; i++)
-    threads_[i]->run();
+  for (unsigned int i = 0; i < threads_number_; ++i) threads_[i]->run();
 
   // Wyświetlenie danych z określoną częstotliwością - w przypadku przełączenia okna następuje niezwłocznie
   displayData();
@@ -201,12 +186,12 @@ void HeatingPress::run()
 
 void HeatingPress::reportError(String code)
 {
-  digitalWrite(PIN_HEAT_SUPPLY_TOP, HIGH);      // awaryjne wyłączenie grzania
+  digitalWrite(PIN_HEAT_SUPPLY_TOP, HIGH);    // awaryjne wyłączenie grzania
   digitalWrite(PIN_HEAT_SUPPLY_BOT, HIGH);
-  lcd_.clear();                                 // komunikat
+  lcd_.clear();    // komunikat
   lcd_.setCursor(0, 0);
   lcd_.print("Error code " + code);
   lcd_.setCursor(0, 1);
   lcd_.print("Please restart");
-  while (true);                                 // zatrzymanie wykonywania programu
+  while (true) {};    // zatrzymanie wykonywania programu
 }

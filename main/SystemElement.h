@@ -15,7 +15,7 @@ class SystemElement
     virtual void run() = 0;
 
   protected:
-    static int ambient_temperature_;   // temperatura otoczenia [*C]
+    static int ambient_temperature_;    // temperatura otoczenia [*C]
 };
 
 // Ustawienie domyślnej wartości temperatury otoczenia

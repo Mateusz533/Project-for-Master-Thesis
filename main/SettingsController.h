@@ -34,23 +34,17 @@ void SettingsController::init()
 
 void SettingsController::executeCommands(const bool buttons[])
 {
-  if (buttons[UP] && !buttons[DOWN] && ambient_temperature_ < MAX_AMBIENT_TEMPERATURE_)
-    ambient_temperature_ += AMBIENT_TEMPERATURE_RESOLUTION_;
-  else if (!buttons[UP] && buttons[DOWN] && ambient_temperature_ > MIN_AMBIENT_TEMPERATURE_)
-    ambient_temperature_ -= AMBIENT_TEMPERATURE_RESOLUTION_;
+  if (buttons[UP] && !buttons[DOWN] && ambient_temperature_ < MAX_AMBIENT_TEMPERATURE_) ambient_temperature_ += AMBIENT_TEMPERATURE_RESOLUTION_;
+  else if (!buttons[UP] && buttons[DOWN] && ambient_temperature_ > MIN_AMBIENT_TEMPERATURE_) ambient_temperature_ -= AMBIENT_TEMPERATURE_RESOLUTION_;
 }
 
 void SettingsController::getDataToDisplay(String& first_line, String& second_line)
 {
   first_line = "Ambient:  ";
-  if (abs(ambient_temperature_) < 100)
-    first_line += " ";
-  if (abs(ambient_temperature_) < 10)
-    first_line += " ";
-  if (ambient_temperature_ < 0)
-    first_line += "-";
-  else
-    first_line += " ";
+  if (abs(ambient_temperature_) < 100) first_line += " ";
+  if (abs(ambient_temperature_) < 10) first_line += " ";
+  if (ambient_temperature_ < 0) first_line += "-";
+  else first_line += " ";
   first_line += static_cast<String>(abs(ambient_temperature_)) + DEGREE_SYMBOL_INDEX + "C";
 
   second_line = "                ";

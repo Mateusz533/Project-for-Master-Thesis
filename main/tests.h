@@ -31,22 +31,19 @@ void testForceSensor()
   force_measurements[force_measuring_counter] = analogRead(PIN_FORCE_SENSOR);
 
   ++force_measuring_counter;
-  if (force_measuring_counter < FORCE_MEASUREMENTS_ARRAY_SIZE)
-    return;
+  if (force_measuring_counter < FORCE_MEASUREMENTS_ARRAY_SIZE) return;
 
   force_measuring_counter = 0;
   float signal_value = 0;
   unsigned int min_value = 0;
   unsigned int max_value = 0;
-  for (unsigned int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE; i++)
+  for (unsigned int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE; ++i)
   {
     signal_value += force_measurements[i];
-    if (min_value > force_measurements[i])
-      min_value = force_measurements[i];
-    if (max_value < force_measurements[i])
-      max_value = force_measurements[i];
+    if (min_value > force_measurements[i]) min_value = force_measurements[i];
+    if (max_value < force_measurements[i]) max_value = force_measurements[i];
   }
-  signal_value /= FORCE_MEASUREMENTS_ARRAY_SIZE;           // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
+  signal_value /= FORCE_MEASUREMENTS_ARRAY_SIZE;    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
   unsigned int displayed_value = round(signal_value);
   Serial.print(displayed_value);
@@ -60,7 +57,7 @@ void testForceSensor()
 
 void testAmplifier(short unsigned int pin_input, short unsigned int pin_output, short unsigned int signal_value)
 {
-  pinMode(pin_input, OUTPUT);         // pin używany tylko do testów
+  pinMode(pin_input, OUTPUT);    // pin używany tylko do testów
 
   signal_value = constrain(signal_value, 0, 1023.0 * 300 / 5000);
   analogWrite(pin_input, signal_value);

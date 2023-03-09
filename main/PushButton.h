@@ -5,7 +5,7 @@ class PushButton
 {
   public:
     // Konstruktor
-    PushButton(short unsigned int pin):
+    PushButton(short unsigned int pin) :
       PIN_(pin)
     {
       // przypisanie numeru pinu w mikrosterowniku
@@ -27,49 +27,38 @@ class PushButton
     // Zmienne przechowujące ostatnie stany przycisku
     bool currently_pressed_ = false;
     bool previously_pressed_ = false;
-    unsigned int time_of_continuous_pressing_ = 0;          // czas ciągłego wciśnęcia mierzony liczbą cykli
+    unsigned int time_of_continuous_pressing_ = 0;    // czas ciągłego wciśnęcia mierzony liczbą cykli
     // Numer pinu przypisany do przycisku
-    const short unsigned int PIN_;
+    const short unsigned int PIN_ = 0;
 };
 
 void PushButton::init()
 {
-  pinMode(PIN_, INPUT);                                     // ustawienie przycisku jako wejście z rezystorem podciągającym
+  pinMode(PIN_, INPUT);    // ustawienie przycisku jako wejście z rezystorem podciągającym
   digitalWrite(PIN_, HIGH);
 }
 
 void PushButton::readSignal()
 {
   previously_pressed_ = currently_pressed_;
-  currently_pressed_ = !digitalRead(PIN_);                  // przycisk wciśnięty przyjmuje stan niski
-  if (currently_pressed_)
-    ++time_of_continuous_pressing_;
-  else
-    time_of_continuous_pressing_ = 0;
+  currently_pressed_ = !digitalRead(PIN_);    // przycisk wciśnięty przyjmuje stan niski
+  if (currently_pressed_) ++time_of_continuous_pressing_;
+  else time_of_continuous_pressing_ = 0;
 }
 
 bool PushButton::isClicked()
 {
-  if (currently_pressed_ && !previously_pressed_)           // stan aktywowany zboczem narastającym
-    return true;
-  else
-    return false;
+  return currently_pressed_ && !previously_pressed_;    // stan aktywowany zboczem narastającym
 }
 
 bool PushButton::isReleased()
 {
-  if (!currently_pressed_ && previously_pressed_)           // stan aktywowany zboczem opadającym
-    return true;
-  else
-    return false;
+  return !currently_pressed_ && previously_pressed_;    // stan aktywowany zboczem opadającym
 }
 
 bool PushButton::isPressed(unsigned int min_pressing_time = 1)
 {
-  if (time_of_continuous_pressing_ >= min_pressing_time)    // stan aktywowany trwającym naciśnięciem
-    return true;
-  else
-    return false;
+  return time_of_continuous_pressing_ >= min_pressing_time;    // stan aktywowany trwającym naciśnięciem
 }
 
 void PushButton::reset()
