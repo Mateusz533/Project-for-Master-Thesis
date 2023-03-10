@@ -15,11 +15,12 @@
 #define PIN_TEMPERATURE_SENSOR_BOT A3
 
 // Okresy poszczególnych części programu
-#define CYCLE_PERIOD 50                       // [ms]
-#define SCREEN_REFRESH_PERIOD 500             // powinny być wielokrotnościami okresu cyklu podstawowego
-#define FORCE_ESTIMATION_PERIOD 1000          //
+#define CYCLE_PERIOD 10                       // [ms]
+#define FORCE_ESTIMATION_PERIOD 1000          // powinny być wielokrotnościami okresu cyklu podstawowego
 #define TEMPERATURE_AVERAGING_PERIOD 200      //
-#define TEMPERATURE_ESTIMATION_PERIOD 1000    // powinien być wielokrotnością okresu uśredniania
+#define TEMPERATURE_ESTIMATION_PERIOD 1000    // powinien być dodatkowo wielokrotnością okresu uśredniania
+#define DISPLAYED_DATA_DIVISOR 32             // powinien być potęgą liczby 2 z przedziału 2 - 32
+#define SCREEN_REFRESH_PERIOD 320             // powinien być dodatkowo wielokrotnością dzielnika powyżej
 
 // Parametry grzania oraz regulacji temperatury
 #define MIN_TEMPERATURE 20                 // [*C]

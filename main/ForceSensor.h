@@ -45,20 +45,27 @@ void ForceSensor::init()
 
 void ForceSensor::executeCommands(const bool buttons[])
 {
-  if (buttons[ACTION] && !is_overloaded_) force_offset_ = force_;
+  if (buttons[ACTION] && !is_overloaded_)
+    force_offset_ = force_;
 }
 
 void ForceSensor::getDataToDisplay(String& first_line, String& second_line)
 {
   first_line = "Force:  ";
-  if (abs(force_ - force_offset_) < 100) first_line += " ";
-  if (abs(force_ - force_offset_) < 10) first_line += " ";
-  if (force_ - force_offset_ < 0) first_line += "-";
-  else first_line += " ";
+  if (abs(force_ - force_offset_) < 100)
+    first_line += " ";
+  if (abs(force_ - force_offset_) < 10)
+    first_line += " ";
+  if (force_ - force_offset_ < 0)
+    first_line += "-";
+  else
+    first_line += " ";
   first_line += static_cast<String>(abs(force_ - force_offset_)) + " N  ";
 
-  if (is_overloaded_) second_line = "OVERLOADED !!!  ";
-  else second_line = "Maximum: 200 N  ";
+  if (is_overloaded_)
+    second_line = "OVERLOADED !!!  ";
+  else
+    second_line = "Maximum: 200 N  ";
 }
 
 void ForceSensor::run()
@@ -67,11 +74,13 @@ void ForceSensor::run()
   force_measurements_[force_measuring_counter] = analogRead(PIN_FORCE_SENSOR_);
 
   ++force_measuring_counter;
-  if (force_measuring_counter < FORCE_MEASUREMENTS_ARRAY_SIZE_) return;
+  if (force_measuring_counter < FORCE_MEASUREMENTS_ARRAY_SIZE_)
+    return;
 
   force_measuring_counter = 0;
   float signal_value = 0;
-  for (unsigned int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE_; ++i) signal_value += force_measurements_[i];
+  for (unsigned int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE_; ++i)
+    signal_value += force_measurements_[i];
   signal_value /= FORCE_MEASUREMENTS_ARRAY_SIZE_;    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
   for (unsigned int i = 1; i < CONVERSION_ARRAYS_SIZE_; ++i)    // konwersja bitów na Newtony

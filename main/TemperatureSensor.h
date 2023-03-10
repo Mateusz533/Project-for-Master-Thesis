@@ -53,7 +53,8 @@ void TemperatureSensor::measureTemperature()
   short_temperature_measurements_[short_measuring_counter_] = analogRead(PIN_TEMPERATURE_SENSOR_);
 
   ++short_measuring_counter_;
-  if (short_measuring_counter_ < SHORT_MEASUREMENTS_ARRAY_SIZE_) return;
+  if (short_measuring_counter_ < SHORT_MEASUREMENTS_ARRAY_SIZE_)
+    return;
 
   short_measuring_counter_ = 0;
 
@@ -62,7 +63,8 @@ void TemperatureSensor::measureTemperature()
   {
     for (unsigned int j = i; j > 0; --j)
     {
-      if (short_temperature_measurements_[j - 1] <= short_temperature_measurements_[j]) break;
+      if (short_temperature_measurements_[j - 1] <= short_temperature_measurements_[j])
+        break;
 
       unsigned int aux_var = short_temperature_measurements_[j];
       short_temperature_measurements_[j] = short_temperature_measurements_[j - 1];
@@ -75,7 +77,8 @@ void TemperatureSensor::measureTemperature()
   unsigned int lower_index = floor(median_position);
   unsigned int higher_index = ceil(median_position);
   float median_temperature = 0;
-  if (lower_index == higher_index) median_temperature = short_temperature_measurements_[lower_index];
+  if (lower_index == higher_index)
+    median_temperature = short_temperature_measurements_[lower_index];
   else
     median_temperature =
       (higher_index - median_position) * short_temperature_measurements_[lower_index] + (median_position - lower_index) * short_temperature_measurements_[higher_index];
@@ -96,12 +99,14 @@ int TemperatureSensor::calculateRelativeTemperature()
   for (unsigned int i = 0; i < LONG_MEASUREMENTS_ARRAY_SIZE_; ++i)
   {
     aux_var = long_temperature_measurements_[i];
-    if (aux_var < LOWER_SIGNAL_LIMIT || aux_var > HIGHER_SIGNAL_LIMIT) continue;
+    if (aux_var < LOWER_SIGNAL_LIMIT || aux_var > HIGHER_SIGNAL_LIMIT)
+      continue;
 
     long_temperature_measurements_[table_size] = aux_var;
     for (unsigned int j = table_size; j > 0; --j)
     {
-      if (long_temperature_measurements_[j - 1] <= aux_var) break;
+      if (long_temperature_measurements_[j - 1] <= aux_var)
+        break;
 
       long_temperature_measurements_[j] = long_temperature_measurements_[j - 1];
       long_temperature_measurements_[j - 1] = aux_var;
@@ -117,7 +122,8 @@ int TemperatureSensor::calculateRelativeTemperature()
   unsigned int lower_index = floor(quantile_position);
   unsigned int higher_index = ceil(quantile_position);
   float signal_value = 0;
-  if (lower_index == higher_index) signal_value = long_temperature_measurements_[lower_index];
+  if (lower_index == higher_index)
+    signal_value = long_temperature_measurements_[lower_index];
   else
     signal_value = (higher_index - quantile_position) * long_temperature_measurements_[lower_index]
                    + (quantile_position - lower_index) * long_temperature_measurements_[higher_index];

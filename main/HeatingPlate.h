@@ -72,22 +72,29 @@ void HeatingPlate::executeCommands(const bool buttons[])
     set_temperature_ -= PRESET_TEMPERATURE_RESOLUTION;
     active_regulation_ = false;
   }
-  if (buttons[ACTION]) is_heating_set_ = !is_heating_set_;
+  if (buttons[ACTION])
+    is_heating_set_ = !is_heating_set_;
 }
 
 void HeatingPlate::getDataToDisplay(String& first_line, String& second_line)
 {
   first_line = DISPLAYED_NAME_ + " temp: ";
-  if (real_temperature_ < 100) first_line += " ";
-  if (real_temperature_ < 10) first_line += " ";
+  if (real_temperature_ < 100)
+    first_line += " ";
+  if (real_temperature_ < 10)
+    first_line += " ";
   first_line += static_cast<String>(real_temperature_) + DEGREE_SYMBOL_INDEX + "C ";
 
   second_line = "Set: ";
-  if (set_temperature_ < 100) second_line += " ";
-  if (set_temperature_ < 10) second_line += " ";
+  if (set_temperature_ < 100)
+    second_line += " ";
+  if (set_temperature_ < 10)
+    second_line += " ";
   second_line += static_cast<String>(set_temperature_) + DEGREE_SYMBOL_INDEX + "C   ";
-  if (is_heating_set_) second_line += " ON";
-  else second_line += "OFF";
+  if (is_heating_set_)
+    second_line += " ON";
+  else
+    second_line += "OFF";
 }
 
 void HeatingPlate::run()
@@ -109,14 +116,18 @@ void HeatingPlate::run()
 
 void HeatingPlate::switchHeating()
 {
-  if (!is_heating_set_) setHeatingPower(0);
-  else if (real_temperature_ - set_temperature_ > TEMPERATURE_REGULATION_RANGE) setHeatingPower(0);
-  else if (real_temperature_ - set_temperature_ < -TEMPERATURE_REGULATION_RANGE) setHeatingPower(MAX_HEATING_POWER);
+  if (!is_heating_set_)
+    setHeatingPower(0);
+  else if (real_temperature_ - set_temperature_ > TEMPERATURE_REGULATION_RANGE)
+    setHeatingPower(0);
+  else if (real_temperature_ - set_temperature_ < -TEMPERATURE_REGULATION_RANGE)
+    setHeatingPower(MAX_HEATING_POWER);
 }
 
 void HeatingPlate::regulateHeatingPower()
 {
-  if (!is_heating_set_) return;
+  if (!is_heating_set_)
+    return;
 
   temperature_derivative_ = 1.0 * (real_temperature_ - set_temperature_ - temperature_deviation_) * 1000 / TEMPERATURE_ESTIMATION_PERIOD;    // zamiana ms w s
   temperature_deviation_ = real_temperature_ - set_temperature_;
@@ -157,7 +168,8 @@ int HeatingPlate::calculateRegulatedHeatingPower()
                                   / (TEMPERATURE_VALUES_[i] - TEMPERATURE_VALUES_[i - 1]));
         break;
       }
-      else heating_power = HEATING_POWER_VALUES_[i];
+      else
+        heating_power = HEATING_POWER_VALUES_[i];
     }
   }
   int power_deviation = round(-DERIVATIVE_REGULATION_COEFFICIENT * temperature_derivative_ - PROPORTIONAL_REGULATION_COEFFICIENT * temperature_deviation_

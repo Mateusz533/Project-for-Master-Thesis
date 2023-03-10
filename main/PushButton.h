@@ -42,8 +42,10 @@ void PushButton::readSignal()
 {
   previously_pressed_ = currently_pressed_;
   currently_pressed_ = !digitalRead(PIN_);    // przycisk wciśnięty przyjmuje stan niski
-  if (currently_pressed_) ++time_of_continuous_pressing_;
-  else time_of_continuous_pressing_ = 0;
+  if (currently_pressed_)
+    ++time_of_continuous_pressing_;
+  else
+    time_of_continuous_pressing_ = 0;
 }
 
 bool PushButton::isClicked()
