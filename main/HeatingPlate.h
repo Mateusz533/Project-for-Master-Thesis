@@ -8,7 +8,7 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
 {
   public:
     // Konstruktor
-    HeatingPlate(short unsigned int pin_temperature_sensor, short unsigned int pin_heat_supply, float tuning_factor, float sensor_offset, String name) :
+    HeatingPlate(short unsigned int pin_temperature_sensor, short unsigned int pin_heat_supply, float tuning_factor, float sensor_offset, const String& name) :
       TemperatureSensor(pin_temperature_sensor, tuning_factor, sensor_offset),
       PIN_HEAT_SUPPLY_(pin_heat_supply),
       DISPLAYED_NAME_(name)
@@ -46,7 +46,7 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
     // Numer pinu przypisanego do grzałki
     const short unsigned int PIN_HEAT_SUPPLY_ = 0;
     // Wyświetlana nazwa grzałki
-    const String DISPLAYED_NAME_ = "HEATER";
+    const String DISPLAYED_NAME_;
     // Tablice konwersji temperatury na moc w stanie ustalonym
     static const short int CONVERSION_ARRAYS_SIZE_ = 14;
     const int TEMPERATURE_VALUES_[CONVERSION_ARRAYS_SIZE_] = { 20, 62, 100, 134, 167, 199, 228, 256, 282, 307, 331, 353, 375, 400 };
@@ -78,23 +78,23 @@ void HeatingPlate::executeCommands(const bool buttons[])
 
 void HeatingPlate::getDataToDisplay(String& first_line, String& second_line)
 {
-  first_line = DISPLAYED_NAME_ + " temp: ";
+  first_line = DISPLAYED_NAME_ + F(" temp: ");
   if (real_temperature_ < 100)
-    first_line += " ";
+    first_line += F(" ");
   if (real_temperature_ < 10)
-    first_line += " ";
-  first_line += static_cast<String>(real_temperature_) + DEGREE_SYMBOL_INDEX + "C ";
+    first_line += F(" ");
+  first_line += static_cast<const String>(real_temperature_) + DEGREE_SYMBOL_INDEX + F("C ");
 
-  second_line = "Set: ";
+  second_line = F("Set: ");
   if (set_temperature_ < 100)
-    second_line += " ";
+    second_line += F(" ");
   if (set_temperature_ < 10)
-    second_line += " ";
-  second_line += static_cast<String>(set_temperature_) + DEGREE_SYMBOL_INDEX + "C   ";
+    second_line += F(" ");
+  second_line += static_cast<const String>(set_temperature_) + DEGREE_SYMBOL_INDEX + F("C   ");
   if (is_heating_set_)
-    second_line += " ON";
+    second_line += F(" ON");
   else
-    second_line += "OFF";
+    second_line += F("OFF");
 }
 
 void HeatingPlate::run()
@@ -106,7 +106,7 @@ void HeatingPlate::run()
   measureTemperature();
 
   // Ustawienie mocy grzania w zależności od obecnej temperatury
-  if (long_measuring_counter_ == LONG_MEASUREMENTS_ARRAY_SIZE_)
+  if (long_measuring_counter_ == long_temperature_measurements_.length())
   {
     long_measuring_counter_ = 0;
     real_temperature_ = ambient_temperature_ + calculateRelativeTemperature();

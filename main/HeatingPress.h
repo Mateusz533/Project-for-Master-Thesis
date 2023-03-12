@@ -2,6 +2,7 @@
 #include "configuration.h"
 #include "PushButton.h"
 #include "SystemElement.h"
+#include "reportError.h"
 #include "tests.h"
 #pragma once
 
@@ -24,7 +25,7 @@ class HeatingPress
     // Destruktor
     ~HeatingPress()
     {
-      reportError("?");
+      reportError(F("?"));
     }
     // Dodaje podany element do systemu jako nowy wątek
     void addThread(SystemElement* new_thread);
@@ -33,7 +34,7 @@ class HeatingPress
     // Wykonuje jeden cykl działania systemu w przypadku nadejścia odpowiadającego mu czasu
     void run();
     // Wyświetla komunikat o błędzie o zadanym numerze, awaryjnie wyłącza grzałki oraz zatrzymuje program
-    void reportError(String code);
+    void emergencyShutdown(const String& code);
 
   private:
     // Wyświetla informacje o urządzeniu
@@ -65,17 +66,17 @@ class HeatingPress
 void HeatingPress::displayIntroduction()
 {
   lcd_.setCursor(0, 0);               // ustawienie kursora w pozycji 0,0 (pierwsza kolumna, pierwszy wiersz)
-  lcd_.print("Heating press");        //
+  lcd_.print(F("Heating press"));     //
   lcd_.setCursor(0, 1);               // ustawienie kursora w pozycji 0,1 (pierwsza kolumna, drugi wiersz)
-  lcd_.print("0-200N, 20-400");       //
+  lcd_.print(F("0-200N, 20-400"));    //
   lcd_.write(DEGREE_SYMBOL_INDEX);    // wyświetlenie symbolu stopnia
-  lcd_.print("C");
+  lcd_.print(F("C"));
   delay(1000);
   lcd_.clear();
   lcd_.setCursor(0, 0);
-  lcd_.print("Made in WUT by");
+  lcd_.print(F("Made in WUT by"));
   lcd_.setCursor(0, 1);
-  lcd_.print("M.Sc. M.Frejlich");
+  lcd_.print(F("M.Sc. M.Frejlich"));
   delay(1000);
   lcd_.clear();
 }
@@ -172,13 +173,13 @@ void HeatingPress::run()
   // Wykonywanie programu z określoną częstotliwością
   long unsigned int timer = millis();
   if (cycle_counter_ > timer + CYCLE_PERIOD)
-    reportError("0");
+    reportError(F("0"));
   if (cycle_counter_ > timer)
     return;
 
   cycle_counter_ += CYCLE_PERIOD;
   if (cycle_counter_ < timer)
-    reportError("1");
+    reportError(F("1"));
 
   // Pobranie stanu wejść, gdy stan niski oznacza wciśnięty przycisk
   for (unsigned int i = 0; i < BUTTONS_NUMBER; ++i)
@@ -207,15 +208,15 @@ void HeatingPress::run()
   // testTimeSynchronization(timer);
 }
 
-void HeatingPress::reportError(String code)
+void HeatingPress::emergencyShutdown(const String& code)
 {
   digitalWrite(PIN_HEAT_SUPPLY_TOP, HIGH);    // awaryjne wyłączenie grzania
   digitalWrite(PIN_HEAT_SUPPLY_BOT, HIGH);
   lcd_.clear();    // komunikat
   lcd_.setCursor(0, 0);
-  lcd_.print("Error code " + code);
+  lcd_.print(static_cast<const String>(F("Error code ")) + code);
   lcd_.setCursor(0, 1);
-  lcd_.print("Please restart");
+  lcd_.print(F("Please restart"));
   while (true)
   {
   };    // zatrzymanie wykonywania programu

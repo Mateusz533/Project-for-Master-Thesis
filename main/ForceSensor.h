@@ -1,5 +1,6 @@
 #include "configuration.h"
 #include "SystemElement.h"
+#include "StaticArray.h"
 #pragma once
 
 // Klasa przechowująca parametry czujnika nacisku
@@ -27,8 +28,7 @@ class ForceSensor : public SystemElement
     int force_ = 0;
     int force_offset_ = 0;
     // Tablica z pomiarami siły
-    static const short int FORCE_MEASUREMENTS_ARRAY_SIZE_ = FORCE_ESTIMATION_PERIOD / CYCLE_PERIOD;
-    int force_measurements_[FORCE_MEASUREMENTS_ARRAY_SIZE_];
+    StaticArray<int> force_measurements_ = StaticArray<int>(FORCE_ESTIMATION_PERIOD / CYCLE_PERIOD);
     // Numer pinu przypisanego do czujnika
     const short unsigned int PIN_FORCE_SENSOR_ = 0;
     // Tablice konwersji pomiaru siły w bitach na Newtony
@@ -51,21 +51,21 @@ void ForceSensor::executeCommands(const bool buttons[])
 
 void ForceSensor::getDataToDisplay(String& first_line, String& second_line)
 {
-  first_line = "Force:  ";
+  first_line = F("Force:  ");
   if (abs(force_ - force_offset_) < 100)
-    first_line += " ";
+    first_line += F(" ");
   if (abs(force_ - force_offset_) < 10)
-    first_line += " ";
+    first_line += F(" ");
   if (force_ - force_offset_ < 0)
-    first_line += "-";
+    first_line += F("-");
   else
-    first_line += " ";
-  first_line += static_cast<String>(abs(force_ - force_offset_)) + " N  ";
+    first_line += F(" ");
+  first_line += static_cast<const String>(abs(force_ - force_offset_)) + F(" N  ");
 
   if (is_overloaded_)
-    second_line = "OVERLOADED !!!  ";
+    second_line = F("OVERLOADED !!!  ");
   else
-    second_line = "Maximum: 200 N  ";
+    second_line = F("Maximum: 200 N  ");
 }
 
 void ForceSensor::run()
@@ -74,14 +74,11 @@ void ForceSensor::run()
   force_measurements_[force_measuring_counter] = analogRead(PIN_FORCE_SENSOR_);
 
   ++force_measuring_counter;
-  if (force_measuring_counter < FORCE_MEASUREMENTS_ARRAY_SIZE_)
+  if (force_measuring_counter < force_measurements_.length())
     return;
 
   force_measuring_counter = 0;
-  float signal_value = 0;
-  for (unsigned int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE_; ++i)
-    signal_value += force_measurements_[i];
-  signal_value /= FORCE_MEASUREMENTS_ARRAY_SIZE_;    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
+  float signal_value = force_measurements_.mean_value();    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
   for (unsigned int i = 1; i < CONVERSION_ARRAYS_SIZE_; ++i)    // konwersja bitów na Newtony
   {

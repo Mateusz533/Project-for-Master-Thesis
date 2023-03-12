@@ -1,4 +1,5 @@
 #include "configuration.h"
+#include "StaticArray.h"
 #pragma once
 
 // Przekazuje dane o mierzonej sile nacisku przez port szeregowy
@@ -18,42 +19,33 @@ void testForceSensor()
 
   // Filtrowane
   static unsigned int force_measuring_counter = 0;
-  static const unsigned int FORCE_MEASUREMENTS_ARRAY_SIZE = 20;
-  static unsigned int force_measurements[FORCE_MEASUREMENTS_ARRAY_SIZE];
-  force_measurements[force_measuring_counter] = analogRead(PIN_FORCE_SENSOR);
+  static StaticArray<unsigned int> force_measurements = StaticArray<unsigned int>(20);
 
+  force_measurements[force_measuring_counter] = analogRead(PIN_FORCE_SENSOR);
   ++force_measuring_counter;
-  if (force_measuring_counter < FORCE_MEASUREMENTS_ARRAY_SIZE)
+  if (force_measuring_counter < force_measurements.length())
     return;
 
   force_measuring_counter = 0;
-  float signal_value = 0;
-  unsigned int min_value = 0;
-  unsigned int max_value = 0;
-  for (unsigned int i = 0; i < FORCE_MEASUREMENTS_ARRAY_SIZE; ++i)
-  {
-    signal_value += force_measurements[i];
-    if (min_value > force_measurements[i])
-      min_value = force_measurements[i];
-    if (max_value < force_measurements[i])
-      max_value = force_measurements[i];
-  }
-  signal_value /= FORCE_MEASUREMENTS_ARRAY_SIZE;    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
-  unsigned int displayed_value = round(signal_value);
-  Serial.print(displayed_value);
-  Serial.print(',');
+  // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
+  unsigned int mean_value = force_measurements.mean_value();
+  unsigned int min_value = force_measurements.min_value();
+  unsigned int max_value = force_measurements.max_value();
+
+  Serial.print(mean_value);
+  Serial.print(F(","));
   Serial.print(min_value);
-  Serial.print(',');
+  Serial.print(F(","));
   Serial.print(max_value);
-  Serial.print(',');
+  Serial.print(F(","));
   Serial.println();
 }
 
 void testTemperatureSensors()
 {
   Serial.print(analogRead(PIN_TEMPERATURE_SENSOR_TOP));
-  Serial.print(',');
+  Serial.print(F(","));
   Serial.print(analogRead(PIN_TEMPERATURE_SENSOR_BOT));
   Serial.println();
 }
@@ -66,35 +58,24 @@ void testAmplifier(short unsigned int pin_output)
 
   // Filtrowane
   static unsigned int measuring_counter = 0;
-  static const unsigned int MEASUREMENTS_ARRAY_SIZE = 100;
-  static unsigned int measurements[MEASUREMENTS_ARRAY_SIZE];
+  static StaticArray<unsigned int> measurements = StaticArray<unsigned int>(100);
 
   measurements[measuring_counter] = analogRead(pin_output);
   ++measuring_counter;
-  if (measuring_counter < MEASUREMENTS_ARRAY_SIZE)
+  if (measuring_counter < measurements.length())
     return;
 
   measuring_counter = 0;
-  float mean_value = 0;
-  unsigned int min_value = 0;
-  unsigned int max_value = 0;
 
-  for (unsigned int i = 0; i < MEASUREMENTS_ARRAY_SIZE; ++i)
-  {
-    mean_value += measurements[i];
-    if (min_value > measurements[i])
-      min_value = measurements[i];
-    if (max_value < measurements[i])
-      max_value = measurements[i];
-  }
-  mean_value /= MEASUREMENTS_ARRAY_SIZE;    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
+  // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
+  unsigned int mean_value = measurements.mean_value();
+  unsigned int min_value = measurements.min_value();
+  unsigned int max_value = measurements.max_value();
 
-  unsigned int displayed_value = round(mean_value);
-
-  Serial.print(displayed_value);
-  Serial.print(',');
+  Serial.print(mean_value);
+  Serial.print(F(","));
   Serial.print(min_value);
-  Serial.print(',');
+  Serial.print(F(","));
   Serial.print(max_value);
   Serial.println();
 }

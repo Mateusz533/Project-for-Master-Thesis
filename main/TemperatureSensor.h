@@ -1,4 +1,5 @@
 #include "configuration.h"
+#include "StaticArray.h"
 #include "reportError.h"
 #pragma once
 
@@ -25,10 +26,8 @@ class TemperatureSensor
     int calculateRelativeTemperature();
 
     // Zmienne przechowujące aktualne wartości temperatury
-    static const short int SHORT_MEASUREMENTS_ARRAY_SIZE_ = TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD;
-    static const short int LONG_MEASUREMENTS_ARRAY_SIZE_ = TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD;
-    float long_temperature_measurements_[LONG_MEASUREMENTS_ARRAY_SIZE_];
-    int short_temperature_measurements_[SHORT_MEASUREMENTS_ARRAY_SIZE_];
+    StaticArray<float> long_temperature_measurements_ = StaticArray<float>(TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD);
+    StaticArray<int> short_temperature_measurements_ = StaticArray<int>(TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD);
     // Liczniki wyznaczające częstotliwość pomiaru
     unsigned int short_measuring_counter_ = 0;
     unsigned int long_measuring_counter_ = 0;
@@ -53,35 +52,13 @@ void TemperatureSensor::measureTemperature()
   short_temperature_measurements_[short_measuring_counter_] = analogRead(PIN_TEMPERATURE_SENSOR_);
 
   ++short_measuring_counter_;
-  if (short_measuring_counter_ < SHORT_MEASUREMENTS_ARRAY_SIZE_)
+  if (short_measuring_counter_ < short_temperature_measurements_.length())
     return;
 
   short_measuring_counter_ = 0;
 
-  // Sortowanie tablic przez wstawianie
-  for (unsigned int i = 0; i < SHORT_MEASUREMENTS_ARRAY_SIZE_; ++i)
-  {
-    for (unsigned int j = i; j > 0; --j)
-    {
-      if (short_temperature_measurements_[j - 1] <= short_temperature_measurements_[j])
-        break;
-
-      unsigned int aux_var = short_temperature_measurements_[j];
-      short_temperature_measurements_[j] = short_temperature_measurements_[j - 1];
-      short_temperature_measurements_[j - 1] = aux_var;
-    }
-  }
-
   // Cyfrowa filtracja szumów poprzez filtr medianowy
-  float median_position = 0.5 * (SHORT_MEASUREMENTS_ARRAY_SIZE_ - 1);
-  unsigned int lower_index = floor(median_position);
-  unsigned int higher_index = ceil(median_position);
-  float median_temperature = 0;
-  if (lower_index == higher_index)
-    median_temperature = short_temperature_measurements_[lower_index];
-  else
-    median_temperature =
-      (higher_index - median_position) * short_temperature_measurements_[lower_index] + (median_position - lower_index) * short_temperature_measurements_[higher_index];
+  float median_temperature = short_temperature_measurements_.quantile(0.5);
 
   long_temperature_measurements_[long_measuring_counter_] = median_temperature;
   ++long_measuring_counter_;
@@ -89,44 +66,30 @@ void TemperatureSensor::measureTemperature()
 
 int TemperatureSensor::calculateRelativeTemperature()
 {
-  const unsigned int LOWER_SIGNAL_LIMIT = 10;
-  const unsigned int HIGHER_SIGNAL_LIMIT = 500;
+  const unsigned int LOWER_SIGNAL_LIMIT = 20;
+  const unsigned int HIGHER_SIGNAL_LIMIT = 720;
   const float QUANTILE = 0.5;
 
   // Sortowanie tablic przez wstawianie
-  unsigned int aux_var = 0;
-  unsigned int table_size = 0;
-  for (unsigned int i = 0; i < LONG_MEASUREMENTS_ARRAY_SIZE_; ++i)
+  long_temperature_measurements_.sort();
+  unsigned int lower_index = 0;
+  unsigned int higher_index = long_temperature_measurements_.length();
+  for (unsigned int i = 0; i < long_temperature_measurements_.length(); ++i)
   {
-    aux_var = long_temperature_measurements_[i];
-    if (aux_var < LOWER_SIGNAL_LIMIT || aux_var > HIGHER_SIGNAL_LIMIT)
-      continue;
-
-    long_temperature_measurements_[table_size] = aux_var;
-    for (unsigned int j = table_size; j > 0; --j)
+    if (long_temperature_measurements_[i] < LOWER_SIGNAL_LIMIT)
+      lower_index = i + 1;
+    if (long_temperature_measurements_[i] > HIGHER_SIGNAL_LIMIT)
     {
-      if (long_temperature_measurements_[j - 1] <= aux_var)
-        break;
-
-      long_temperature_measurements_[j] = long_temperature_measurements_[j - 1];
-      long_temperature_measurements_[j - 1] = aux_var;
+      higher_index = i;
+      break;
     }
-    ++table_size;
   }
 
   //  // Cyfrowa filtracja szumów poprzez filtr medianowy
-  //  if (table_size < LONG_MEASUREMENTS_ARRAY_SIZE_ / 2.0)
-  //    reportError("2");
+  //  if (higher_index < lower_index + long_temperature_measurements_.length() / 2.0)
+  //    reportError(F("2"));
 
-  float quantile_position = QUANTILE * (table_size - 1);
-  unsigned int lower_index = floor(quantile_position);
-  unsigned int higher_index = ceil(quantile_position);
-  float signal_value = 0;
-  if (lower_index == higher_index)
-    signal_value = long_temperature_measurements_[lower_index];
-  else
-    signal_value = (higher_index - quantile_position) * long_temperature_measurements_[lower_index]
-                   + (quantile_position - lower_index) * long_temperature_measurements_[higher_index];
+  float signal_value = long_temperature_measurements_.quantile(QUANTILE, lower_index, higher_index);
 
   // Dodatkowa korekta ustawionych mechanicznie wzmocnień wzmacniaczy sygnałów temperatury
   return round(TUNING_FACTOR_ * (signal_value - SENSOR_OFFSET_));
