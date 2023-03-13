@@ -19,7 +19,7 @@ void testForceSensor()
 
   // Filtrowane
   static unsigned int force_measuring_counter = 0;
-  static StaticArray<unsigned int> force_measurements = StaticArray<unsigned int>(20);
+  static StaticArray<unsigned int> force_measurements(20);
 
   force_measurements[force_measuring_counter] = analogRead(PIN_FORCE_SENSOR);
   ++force_measuring_counter;
@@ -58,7 +58,7 @@ void testAmplifier(short unsigned int pin_output)
 
   // Filtrowane
   static unsigned int measuring_counter = 0;
-  static StaticArray<unsigned int> measurements = StaticArray<unsigned int>(100);
+  static StaticArray<unsigned int> measurements(20);
 
   measurements[measuring_counter] = analogRead(pin_output);
   ++measuring_counter;

@@ -1,6 +1,7 @@
 #include "configuration.h"
 #include "SystemElement.h"
 #include "TemperatureSensor.h"
+#include "StaticArray.h"
 #pragma once
 
 // Klasa przechowująca parametry płyty grzewczej
@@ -11,7 +12,10 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
     HeatingPlate(short unsigned int pin_temperature_sensor, short unsigned int pin_heat_supply, float tuning_factor, float sensor_offset, const String& name) :
       TemperatureSensor(pin_temperature_sensor, tuning_factor, sensor_offset),
       PIN_HEAT_SUPPLY_(pin_heat_supply),
-      DISPLAYED_NAME_(name)
+      DISPLAYED_NAME_(name),
+      TEMPERATURE_VALUES_(14, new const int[14]{ 20, 62, 100, 134, 167, 199, 228, 256, 282, 307, 331, 353, 375, 400 }),
+      HEATING_POWER_VALUES_(14, new const int[14]{ 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65 })
+
     {
       // przypisanie numerów pinów w mikrosterowniku
     }
@@ -48,9 +52,8 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
     // Wyświetlana nazwa grzałki
     const String DISPLAYED_NAME_;
     // Tablice konwersji temperatury na moc w stanie ustalonym
-    static const short int CONVERSION_ARRAYS_SIZE_ = 14;
-    const int TEMPERATURE_VALUES_[CONVERSION_ARRAYS_SIZE_] = { 20, 62, 100, 134, 167, 199, 228, 256, 282, 307, 331, 353, 375, 400 };
-    const int HEATING_POWER_VALUES_[CONVERSION_ARRAYS_SIZE_] = { 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65 };
+    StaticArray<const int> TEMPERATURE_VALUES_;
+    StaticArray<const int> HEATING_POWER_VALUES_;
 };
 
 void HeatingPlate::init()
@@ -159,18 +162,7 @@ int HeatingPlate::calculateRegulatedHeatingPower()
   if (!active_regulation_)
   {
     active_regulation_ = true;
-    for (unsigned int i = 1; i < CONVERSION_ARRAYS_SIZE_; ++i)
-    {
-      if (set_temperature_ < TEMPERATURE_VALUES_[i])
-      {
-        heating_power = round(HEATING_POWER_VALUES_[i - 1]
-                              + 1.0 * (set_temperature_ - TEMPERATURE_VALUES_[i - 1]) * (HEATING_POWER_VALUES_[i] - HEATING_POWER_VALUES_[i - 1])
-                                  / (TEMPERATURE_VALUES_[i] - TEMPERATURE_VALUES_[i - 1]));
-        break;
-      }
-      else
-        heating_power = HEATING_POWER_VALUES_[i];
-    }
+    heating_power = tabularConversion(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, set_temperature_);
   }
   int power_deviation = round(-DERIVATIVE_REGULATION_COEFFICIENT * temperature_derivative_ - PROPORTIONAL_REGULATION_COEFFICIENT * temperature_deviation_
                               - INTEGRAL_REGULATION_COEFFICIENT * temperature_integral_);

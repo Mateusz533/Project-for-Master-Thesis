@@ -1,6 +1,7 @@
 #include "configuration.h"
 #include "SystemElement.h"
 #include "StaticArray.h"
+#include "tabularConversion.h"
 #pragma once
 
 // Klasa przechowująca parametry czujnika nacisku
@@ -9,7 +10,9 @@ class ForceSensor : public SystemElement
   public:
     // Konstruktor
     ForceSensor(short unsigned int pin_force_sensor) :
-      PIN_FORCE_SENSOR_(pin_force_sensor)
+      PIN_FORCE_SENSOR_(pin_force_sensor),
+      SIGNAL_VALUES_(14, new const int[14]{ 0, 29, 60, 83, 99, 115, 129, 154, 178, 195, 213, 242, 266, 289 }),
+      FORCE_VALUES_(14, new const int[14]{ 0, 5, 10, 20, 30, 40, 50, 70, 90, 110, 130, 150, 170, 200 })
     {
       // przypisanie numeru pinu w mikrosterowniku
     }
@@ -32,9 +35,8 @@ class ForceSensor : public SystemElement
     // Numer pinu przypisanego do czujnika
     const short unsigned int PIN_FORCE_SENSOR_ = 0;
     // Tablice konwersji pomiaru siły w bitach na Newtony
-    static const short int CONVERSION_ARRAYS_SIZE_ = 14;
-    const int SIGNAL_VALUES_[CONVERSION_ARRAYS_SIZE_] = { 0, 29, 60, 83, 99, 115, 129, 154, 178, 195, 213, 242, 266, 289 };
-    const int FORCE_VALUES_[CONVERSION_ARRAYS_SIZE_] = { 0, 5, 10, 20, 30, 40, 50, 70, 90, 110, 130, 150, 170, 200 };
+    StaticArray<const int> SIGNAL_VALUES_;
+    StaticArray<const int> FORCE_VALUES_;
 };
 
 void ForceSensor::init()
@@ -80,19 +82,7 @@ void ForceSensor::run()
   force_measuring_counter = 0;
   float signal_value = force_measurements_.mean_value();    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
-  for (unsigned int i = 1; i < CONVERSION_ARRAYS_SIZE_; ++i)    // konwersja bitów na Newtony
-  {
-    if (signal_value < SIGNAL_VALUES_[i])
-    {
-      force_ = round(
-        FORCE_VALUES_[i - 1] + (signal_value - SIGNAL_VALUES_[i - 1]) * (FORCE_VALUES_[i] - FORCE_VALUES_[i - 1]) / (SIGNAL_VALUES_[i] - SIGNAL_VALUES_[i - 1]));
-      is_overloaded_ = false;
-      break;
-    }
-    else if (i == CONVERSION_ARRAYS_SIZE_ - 1)
-    {
-      force_ = FORCE_VALUES_[i];
-      is_overloaded_ = true;
-    }
-  }
+  force_ = tabularConversion<const int, const int>(SIGNAL_VALUES_, FORCE_VALUES_, signal_value);    // konwersja bitów na Newtony
+
+  is_overloaded_ = (force_ >= FORCE_VALUES_[FORCE_VALUES_.length() - 1]);
 }
