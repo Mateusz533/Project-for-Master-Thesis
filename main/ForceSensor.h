@@ -1,6 +1,7 @@
 #include "configuration.h"
 #include "SystemElement.h"
 #include "StaticArray.h"
+#include "Queue.h"
 #include "tabularConversion.h"
 #pragma once
 
@@ -30,11 +31,11 @@ class ForceSensor : public SystemElement
     bool is_overloaded_ = false;
     int force_ = 0;
     int force_offset_ = 0;
-    // Tablica z pomiarami siły
-    StaticArray<int> force_measurements_ = StaticArray<int>(FORCE_ESTIMATION_PERIOD / CYCLE_PERIOD);
+    // Kolejka przechowująca pomiary siły nacisku
+    Queue<int> force_measurements_ = Queue<int>(FORCE_ESTIMATION_PERIOD / CYCLE_PERIOD);
     // Numer pinu przypisanego do czujnika
     const short unsigned int PIN_FORCE_SENSOR_ = 0;
-    // Tablice konwersji pomiaru siły w bitach na Newtony
+    // Tablice konwersji pomiaru siły w poziomach ADC na Newtony
     StaticArray<const int> SIGNAL_VALUES_;
     StaticArray<const int> FORCE_VALUES_;
 };
@@ -72,17 +73,16 @@ void ForceSensor::getDataToDisplay(String& first_line, String& second_line)
 
 void ForceSensor::run()
 {
-  static unsigned int force_measuring_counter = 0;
-  force_measurements_[force_measuring_counter] = analogRead(PIN_FORCE_SENSOR_);
+  force_measurements_.push(analogRead(PIN_FORCE_SENSOR_));
 
-  ++force_measuring_counter;
-  if (force_measuring_counter < force_measurements_.length())
+  if (!force_measurements_.isFull())
     return;
 
-  force_measuring_counter = 0;
   float signal_value = force_measurements_.mean_value();    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
-  force_ = tabularConversion<const int, const int>(SIGNAL_VALUES_, FORCE_VALUES_, signal_value);    // konwersja bitów na Newtony
+  force_ = tabularConversion<const int, const int>(SIGNAL_VALUES_, FORCE_VALUES_, signal_value);    // konwersja poziomów ADC na Newtony
 
-  is_overloaded_ = (force_ >= FORCE_VALUES_[FORCE_VALUES_.length() - 1]);
+  is_overloaded_ = (force_ >= FORCE_VALUES_[FORCE_VALUES_.length() - 1]);    // sprawdzenie przeciążenia czujnika
+
+  force_measurements_.clear();
 }

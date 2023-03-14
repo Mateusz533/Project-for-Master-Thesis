@@ -1,5 +1,5 @@
 #include "configuration.h"
-#include "StaticArray.h"
+#include "Queue.h"
 #pragma once
 
 // Przekazuje dane o mierzonej sile nacisku przez port szeregowy
@@ -18,20 +18,17 @@ void testForceSensor()
   //Serial.println();
 
   // Filtrowane
-  static unsigned int force_measuring_counter = 0;
-  static StaticArray<unsigned int> force_measurements(20);
+  static Queue<unsigned int> force_measurements(20);
+  force_measurements.push(analogRead(PIN_FORCE_SENSOR));
 
-  force_measurements[force_measuring_counter] = analogRead(PIN_FORCE_SENSOR);
-  ++force_measuring_counter;
-  if (force_measuring_counter < force_measurements.length())
+  if (!force_measurements.isFull())
     return;
-
-  force_measuring_counter = 0;
 
   // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
   unsigned int mean_value = force_measurements.mean_value();
   unsigned int min_value = force_measurements.min_value();
   unsigned int max_value = force_measurements.max_value();
+  force_measurements.clear();
 
   Serial.print(mean_value);
   Serial.print(F(","));
@@ -57,20 +54,17 @@ void testAmplifier(short unsigned int pin_output)
   // Serial.println();
 
   // Filtrowane
-  static unsigned int measuring_counter = 0;
-  static StaticArray<unsigned int> measurements(20);
+  static Queue<unsigned int> measurements(20);
+  measurements.push(analogRead(pin_output));
 
-  measurements[measuring_counter] = analogRead(pin_output);
-  ++measuring_counter;
-  if (measuring_counter < measurements.length())
+  if (!measurements.isFull())
     return;
-
-  measuring_counter = 0;
 
   // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
   unsigned int mean_value = measurements.mean_value();
   unsigned int min_value = measurements.min_value();
   unsigned int max_value = measurements.max_value();
+  measurements.clear();
 
   Serial.print(mean_value);
   Serial.print(F(","));

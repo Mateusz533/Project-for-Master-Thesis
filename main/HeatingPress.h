@@ -3,7 +3,7 @@
 #include "PushButton.h"
 #include "SystemElement.h"
 #include "reportError.h"
-#include "tests.h"
+#include "hardwareTests.h"
 #pragma once
 
 // Klasa przechowująca parametry prasy grzewczej
@@ -87,8 +87,8 @@ void HeatingPress::init()
   for (unsigned int i = 0; i < BUTTONS_NUMBER; ++i)     // przyciski
     buttons_[i].init();                                 //
   for (unsigned int i = 0; i < threads_number_; ++i)    // czujniki nacisku, temperatury oraz przekaźnik
-
     threads_[i]->init();
+
   // Konfiguracja ekranu
   lcd_.begin();                                    // inicjalizacja LCD
   lcd_.backlight();                                // załączenie podświetlenia
@@ -192,7 +192,7 @@ void HeatingPress::run()
   // testForceSensor();
 
   /*TEST CZUJNIKÓW TEMPERATTURY*/
-  testTemperatureSensors();
+  // testTemperatureSensors();
 
   /*TEST WZMACNIACZA*/
   // testAmplifier(PIN_TEMPERATURE_SENSOR_BOT);

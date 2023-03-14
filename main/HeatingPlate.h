@@ -109,10 +109,10 @@ void HeatingPlate::run()
   measureTemperature();
 
   // Ustawienie mocy grzania w zależności od obecnej temperatury
-  if (long_measuring_counter_ == long_temperature_measurements_.length())
+  if (long_temperature_measurements_.isFull())
   {
-    long_measuring_counter_ = 0;
     real_temperature_ = ambient_temperature_ + calculateRelativeTemperature();
+    long_temperature_measurements_.clear();
     regulateHeatingPower();
   }
 }

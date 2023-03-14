@@ -1,5 +1,6 @@
 #include "configuration.h"
 #include "StaticArray.h"
+#include "Queue.h"
 #include "reportError.h"
 #pragma once
 
@@ -26,11 +27,8 @@ class TemperatureSensor
     int calculateRelativeTemperature();
 
     // Zmienne przechowujące aktualne wartości temperatury
-    StaticArray<float> long_temperature_measurements_ = StaticArray<float>(TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD);
-    StaticArray<int> short_temperature_measurements_ = StaticArray<int>(TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD);
-    // Liczniki wyznaczające częstotliwość pomiaru
-    unsigned int short_measuring_counter_ = 0;
-    unsigned int long_measuring_counter_ = 0;
+    Queue<float> long_temperature_measurements_ = Queue<float>(TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD);
+    Queue<int> short_temperature_measurements_ = Queue<int>(TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD);
 
   private:
     // Numer pinu przypisanego do czujnika
@@ -49,19 +47,16 @@ void TemperatureSensor::init()
 void TemperatureSensor::measureTemperature()
 {
   // Zgrubne ustawienie wzmocnienia sygnału tak, aby wzrost temperatury o 1 *C zwiększał odczyt o 1
-  short_temperature_measurements_[short_measuring_counter_] = analogRead(PIN_TEMPERATURE_SENSOR_);
+  short_temperature_measurements_.push(analogRead(PIN_TEMPERATURE_SENSOR_));
 
-  ++short_measuring_counter_;
-  if (short_measuring_counter_ < short_temperature_measurements_.length())
+  if (!short_temperature_measurements_.isFull())
     return;
-
-  short_measuring_counter_ = 0;
 
   // Cyfrowa filtracja szumów poprzez filtr medianowy
   float median_temperature = short_temperature_measurements_.quantile(0.5);
+  short_temperature_measurements_.clear();
 
-  long_temperature_measurements_[long_measuring_counter_] = median_temperature;
-  ++long_measuring_counter_;
+  long_temperature_measurements_.push(median_temperature);
 }
 
 int TemperatureSensor::calculateRelativeTemperature()
