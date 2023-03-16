@@ -214,7 +214,7 @@ void HeatingPress::emergencyShutdown(const String& code)
   digitalWrite(PIN_HEAT_SUPPLY_BOT, HIGH);
   lcd_.clear();    // komunikat
   lcd_.setCursor(0, 0);
-  lcd_.print(static_cast<const String>(F("Error code ")) + code);
+  lcd_.print(String(F("Error code ")) + code);
   lcd_.setCursor(0, 1);
   lcd_.print(F("Please restart"));
   while (true)

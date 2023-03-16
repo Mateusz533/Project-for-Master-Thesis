@@ -42,16 +42,10 @@ void SettingsController::executeCommands(const bool buttons[])
 
 void SettingsController::getDataToDisplay(String& first_line, String& second_line)
 {
-  first_line = F("Ambient:  ");
-  if (abs(ambient_temperature_) < 100)
-    first_line += F(" ");
-  if (abs(ambient_temperature_) < 10)
-    first_line += F(" ");
-  if (ambient_temperature_ < 0)
-    first_line += F("-");
-  else
-    first_line += F(" ");
-  first_line += static_cast<String>(abs(ambient_temperature_)) + DEGREE_SYMBOL_INDEX + F("C");
+  first_line = String(F("Ambient:      ")) + DEGREE_SYMBOL_INDEX + F("C");
+  String str_ambient_temp(ambient_temperature_);
+  for (unsigned int i = 0; i < str_ambient_temp.length(); ++i)
+    first_line.setCharAt(13 - i, str_ambient_temp.charAt(str_ambient_temp.length() - 1 - i));
 
   second_line = F("                ");
 }

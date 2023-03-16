@@ -1,3 +1,4 @@
+#include "WString.h"
 #include "configuration.h"
 #include "SystemElement.h"
 #include "StaticArray.h"
@@ -54,16 +55,10 @@ void ForceSensor::executeCommands(const bool buttons[])
 
 void ForceSensor::getDataToDisplay(String& first_line, String& second_line)
 {
-  first_line = F("Force:  ");
-  if (abs(force_ - force_offset_) < 100)
-    first_line += F(" ");
-  if (abs(force_ - force_offset_) < 10)
-    first_line += F(" ");
-  if (force_ - force_offset_ < 0)
-    first_line += F("-");
-  else
-    first_line += F(" ");
-  first_line += static_cast<const String>(abs(force_ - force_offset_)) + F(" N  ");
+  first_line = F("Force:       N  ");
+  String str_force(force_ - force_offset_);
+  for (unsigned int i = 0; i < str_force.length(); ++i)
+    first_line.setCharAt(11 - i, str_force.charAt(str_force.length() - 1 - i));
 
   if (is_overloaded_)
     second_line = F("OVERLOADED !!!  ");

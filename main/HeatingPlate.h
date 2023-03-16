@@ -81,23 +81,16 @@ void HeatingPlate::executeCommands(const bool buttons[])
 
 void HeatingPlate::getDataToDisplay(String& first_line, String& second_line)
 {
-  first_line = DISPLAYED_NAME_ + F(" temp: ");
-  if (real_temperature_ < 100)
-    first_line += F(" ");
-  if (real_temperature_ < 10)
-    first_line += F(" ");
-  first_line += static_cast<const String>(real_temperature_) + DEGREE_SYMBOL_INDEX + F("C ");
+  first_line = DISPLAYED_NAME_ + F(" temp:    ") + DEGREE_SYMBOL_INDEX + F("C ");
+  String str_real_temp(real_temperature_);
+  for (unsigned int i = 0; i < str_real_temp.length(); ++i)
+    first_line.setCharAt(12 - i, str_real_temp.charAt(str_real_temp.length() - 1 - i));
 
-  second_line = F("Set: ");
-  if (set_temperature_ < 100)
-    second_line += F(" ");
-  if (set_temperature_ < 10)
-    second_line += F(" ");
-  second_line += static_cast<const String>(set_temperature_) + DEGREE_SYMBOL_INDEX + F("C   ");
-  if (is_heating_set_)
-    second_line += F(" ON");
-  else
-    second_line += F("OFF");
+  second_line = String(F("Set:    ")) + DEGREE_SYMBOL_INDEX + F("C   ");
+  String str_set_temp(set_temperature_);
+  for (unsigned int i = 0; i < str_set_temp.length(); ++i)
+    second_line.setCharAt(7 - i, str_set_temp.charAt(str_set_temp.length() - 1 - i));
+  second_line += is_heating_set_ ? F(" ON") : F("OFF");
 }
 
 void HeatingPlate::run()
