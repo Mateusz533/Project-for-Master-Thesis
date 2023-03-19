@@ -15,8 +15,10 @@ class SystemElement
     virtual void run() = 0;
 
   protected:
-    static int ambient_temperature_;    // temperatura otoczenia [*C]
+    static int ambient_temperature;    // temperatura otoczenia [*C]
+    static int max_heating_power;      // maksymalna moc grzania jednej płyty [W]
 };
 
-// Ustawienie domyślnej wartości temperatury otoczenia
-int SystemElement::ambient_temperature_ = DEFAULT_AMBIENT_TEMPERATURE;
+// Ustawienie domyślnych wartości temperatury otoczenia oraz maksymalnej mocy grznia
+int SystemElement::ambient_temperature = DEFAULT_AMBIENT_TEMPERATURE;
+int SystemElement::max_heating_power = MAX_HEATING_POWER;

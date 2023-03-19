@@ -104,7 +104,7 @@ void HeatingPlate::run()
   // Ustawienie mocy grzania w zależności od obecnej temperatury
   if (long_temperature_measurements_.isFull())
   {
-    real_temperature_ = ambient_temperature_ + calculateRelativeTemperature();
+    real_temperature_ = ambient_temperature + calculateRelativeTemperature();
     long_temperature_measurements_.clear();
     regulateHeatingPower();
   }
@@ -117,7 +117,7 @@ void HeatingPlate::switchHeating()
   else if (real_temperature_ - set_temperature_ > TEMPERATURE_REGULATION_RANGE)
     setHeatingPower(0);
   else if (real_temperature_ - set_temperature_ < -TEMPERATURE_REGULATION_RANGE)
-    setHeatingPower(MAX_HEATING_POWER);
+    setHeatingPower(max_heating_power);
 }
 
 void HeatingPlate::regulateHeatingPower()
@@ -133,7 +133,7 @@ void HeatingPlate::regulateHeatingPower()
   if (temperature_deviation_ < -TEMPERATURE_REGULATION_RANGE)    // procedura regulacji
   {
     active_regulation_ = false;
-    heat_supply = MAX_HEATING_POWER;
+    heat_supply = max_heating_power;
     temperature_integral_ = 0;
   }
   else if (temperature_deviation_ > TEMPERATURE_REGULATION_RANGE)
@@ -159,13 +159,13 @@ int HeatingPlate::calculateRegulatedHeatingPower()
   }
   int power_deviation = round(-DERIVATIVE_REGULATION_COEFFICIENT * temperature_derivative_ - PROPORTIONAL_REGULATION_COEFFICIENT * temperature_deviation_
                               - INTEGRAL_REGULATION_COEFFICIENT * temperature_integral_);
-  heating_power = constrain(heating_power + power_deviation, 0, MAX_HEATING_POWER);
+  heating_power = constrain(heating_power + power_deviation, 0, max_heating_power);
   return heating_power;
 }
 
 void HeatingPlate::setHeatingPower(int heating_power)
 {
-  heating_power = constrain(heating_power, 0, MAX_HEATING_POWER);
-  heating_power = map(heating_power, 0, MAX_HEATING_POWER, 0, MAX_HEAT_SIGNAL);
+  heating_power = constrain(heating_power, 0, max_heating_power);
+  heating_power = map(heating_power, 0, max_heating_power, 0, MAX_HEAT_SIGNAL);
   analogWrite(PIN_HEAT_SUPPLY_, MAX_HEAT_SIGNAL - heating_power);    // przekaźnik wyzwalany stanem niskim
 }

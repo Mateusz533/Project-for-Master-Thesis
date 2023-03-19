@@ -1,4 +1,3 @@
-#include "WString.h"
 #include "configuration.h"
 #include "SystemElement.h"
 #include "StaticArray.h"
