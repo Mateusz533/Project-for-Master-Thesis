@@ -2,6 +2,7 @@
 #include "SystemElement.h"
 #include "TemperatureSensor.h"
 #include "StaticArray.h"
+#include "reportError.h"
 #pragma once
 
 // Klasa przechowująca parametry płyty grzewczej
@@ -104,7 +105,11 @@ void HeatingPlate::run()
   // Ustawienie mocy grzania w zależności od obecnej temperatury
   if (long_temperature_measurements_.isFull())
   {
-    real_temperature_ = ambient_temperature + calculateRelativeTemperature();
+    int estimated_temperature = ambient_temperature + calculateRelativeTemperature();
+    if (abs(real_temperature_ - estimated_temperature) > 5 * TEMPERATURE_ESTIMATION_PERIOD / 1000)    // sprawdzenie poprawności sygnału
+      reportError(F("4"));
+
+    real_temperature_ = estimated_temperature;
     long_temperature_measurements_.clear();
     regulateHeatingPower();
   }
@@ -122,11 +127,12 @@ void HeatingPlate::switchHeating()
 
 void HeatingPlate::regulateHeatingPower()
 {
+  temperature_derivative_ = 1.0 * (real_temperature_ - set_temperature_ - temperature_deviation_) * 1000 / TEMPERATURE_ESTIMATION_PERIOD;    // zamiana ms w s
+  temperature_deviation_ = real_temperature_ - set_temperature_;
+
   if (!is_heating_set_)
     return;
 
-  temperature_derivative_ = 1.0 * (real_temperature_ - set_temperature_ - temperature_deviation_) * 1000 / TEMPERATURE_ESTIMATION_PERIOD;    // zamiana ms w s
-  temperature_deviation_ = real_temperature_ - set_temperature_;
   temperature_integral_ += 1.0 * temperature_deviation_ * TEMPERATURE_ESTIMATION_PERIOD / 1000;
 
   int heat_supply = 0;
@@ -147,6 +153,18 @@ void HeatingPlate::regulateHeatingPower()
     heat_supply = calculateRegulatedHeatingPower();
   }
   setHeatingPower(heat_supply);
+
+  // Sprawdzenie poprawności grzania
+  float predicted_temperature_change = 5e-6 * (heat_supply - tabularConversion(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, real_temperature_)) * TEMPERATURE_ESTIMATION_PERIOD;
+  float real_temperature_change = (temperature_derivative_ * TEMPERATURE_ESTIMATION_PERIOD / 1000) % PRESET_TEMPERATURE_RESOLUTION;
+  if (2 * abs(real_temperature_change) > PRESET_TEMPERATURE_RESOLUTION)
+    real_temperature_change -= PRESET_TEMPERATURE_RESOLUTION * abs(real_temperature_change) / real_temperature_change;
+  static float prediction_error = 0;
+  float current_error = real_temperature_change - predicted_temperature_change;
+  current_error = current_error == 0 ? 0 : current_error / max(abs(real_temperature_change), abs(predicted_temperature_change));
+  prediction_error = 0.9 * prediction_error + 0.1 * current_error;
+  if (abs(prediction_error) > 0.9)
+    reportError(F("5"));
 }
 
 int HeatingPlate::calculateRegulatedHeatingPower()

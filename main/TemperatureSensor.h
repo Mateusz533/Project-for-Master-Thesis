@@ -82,7 +82,7 @@ int TemperatureSensor::calculateRelativeTemperature()
 
   //  // Cyfrowa filtracja szumów poprzez filtr medianowy
   //  if (higher_index < lower_index + long_temperature_measurements_.length() / 2.0)
-  //    reportError(F("2"));
+  //    reportError(F("3"));
 
   float signal_value = long_temperature_measurements_.quantile(QUANTILE, lower_index, higher_index);
 

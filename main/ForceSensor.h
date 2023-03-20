@@ -3,6 +3,7 @@
 #include "StaticArray.h"
 #include "Queue.h"
 #include "tabularConversion.h"
+#include "reportError.h"
 #pragma once
 
 // Klasa przechowująca parametry czujnika nacisku
@@ -73,6 +74,9 @@ void ForceSensor::run()
     return;
 
   float signal_value = force_measurements_.mean_value();    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
+
+  if (signal_value > 900)    // sprawdzenie poprawności sygnału
+    reportError(F("2"));
 
   force_ = tabularConversion<const int, const int>(SIGNAL_VALUES_, FORCE_VALUES_, signal_value);    // konwersja poziomów ADC na Newtony
 
