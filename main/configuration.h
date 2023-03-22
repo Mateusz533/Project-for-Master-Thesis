@@ -41,6 +41,10 @@
   }
 #define DEGREE_SYMBOL_INDEX '\1'
 
+// Parametry ekranu LCD
+#define LCD_COLUMNS_NUMBER 16
+#define LCD_ROWS_NUMBER 2
+
 // Enumerator dla przycisków
 #define BUTTONS_NUMBER 5
 enum Button : short unsigned int

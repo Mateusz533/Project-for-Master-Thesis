@@ -33,7 +33,7 @@ class StaticArray
       return value_[index % LENGTH_];
     }
     // Destruktor
-    ~StaticArray()
+    virtual ~StaticArray()
     {
       delete[] value_;
     }
