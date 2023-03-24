@@ -18,7 +18,7 @@ class SettingsController : public SystemElement
     // Wykonuje pobrane od użytkownika polecania dotyczące parametrów globalnych
     void executeCommands(const bool buttons[]);
     // Wyświetla dane dotyczące parametrów globalnych
-    void getDataToDisplay(String& first_line, String& second_line);
+    void getDataToDisplay(String& first_line, String& second_line) const;
     // Nie wykonuje żadnej akcji
     void run();
 
@@ -48,14 +48,14 @@ void SettingsController::executeCommands(const bool buttons[])
   {
     if (buttons[UP] && !buttons[DOWN] && max_heating_power < MAX_HEATING_POWER)
       max_heating_power += MAX_HEATING_POWER_RESOLUTION_;
-    else if (!buttons[UP] && buttons[DOWN] && max_heating_power > 0)
+    else if (!buttons[UP] && buttons[DOWN] && max_heating_power > MAX_HEATING_POWER_RESOLUTION_)
       max_heating_power -= MAX_HEATING_POWER_RESOLUTION_;
   }
   if (buttons[ACTION])
     current_line = !current_line;
 }
 
-void SettingsController::getDataToDisplay(String& first_line, String& second_line)
+void SettingsController::getDataToDisplay(String& first_line, String& second_line) const
 {
   first_line = String(F("Ambient:      ")) + DEGREE_SYMBOL_INDEX + F("C");
   String str_ambient_temp(ambient_temperature);

@@ -2,6 +2,7 @@
 #include "SystemElement.h"
 #include "TemperatureSensor.h"
 #include "StaticArray.h"
+#include "tabularConversion.h"
 #include "reportError.h"
 #pragma once
 
@@ -14,8 +15,8 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
       TemperatureSensor(pin_temperature_sensor, tuning_factor, sensor_offset),
       PIN_HEAT_SUPPLY_(pin_heat_supply),
       DISPLAYED_NAME_(name),
-      TEMPERATURE_VALUES_(14, new const int[14]{ 20, 62, 100, 134, 167, 199, 228, 256, 282, 307, 331, 353, 375, 400 }),
-      HEATING_POWER_VALUES_(14, new const int[14]{ 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65 })
+      TEMPERATURE_VALUES_(TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE, new const int[TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE] TEMPERATURE_VALUES),
+      HEATING_POWER_VALUES_(TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE, new const int[TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE] HEATING_POWER_VALUES)
 
     {
       // przypisanie numerów pinów w mikrosterowniku
@@ -25,7 +26,7 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
     // Wykonuje pobrane od użytkownika polecania dotyczące zadanej temperatury oraz stanu grzania
     void executeCommands(const bool buttons[]);
     // Wyświetla dane dotyczące płyty grzewczej
-    void getDataToDisplay(String& first_line, String& second_line);
+    void getDataToDisplay(String& first_line, String& second_line) const;
     // Wykonuje wszystkie funkcje płyty z odpowiednimi dla nich częstotliwościami
     void run();
 
@@ -49,7 +50,7 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
     int temperature_derivative_ = 0;    // [K/s]
     int temperature_integral_ = 0;      // [K*s]
     // Numer pinu przypisanego do grzałki
-    const short unsigned int PIN_HEAT_SUPPLY_ = 0;
+    const short unsigned int PIN_HEAT_SUPPLY_ = 1;
     // Wyświetlana nazwa grzałki
     const String DISPLAYED_NAME_;
     // Tablice konwersji temperatury na moc w stanie ustalonym
@@ -80,7 +81,7 @@ void HeatingPlate::executeCommands(const bool buttons[])
     is_heating_set_ = !is_heating_set_;
 }
 
-void HeatingPlate::getDataToDisplay(String& first_line, String& second_line)
+void HeatingPlate::getDataToDisplay(String& first_line, String& second_line) const
 {
   first_line = DISPLAYED_NAME_ + F(" temp:    ") + DEGREE_SYMBOL_INDEX + F("C ");
   String str_real_temp(real_temperature_);
@@ -106,8 +107,8 @@ void HeatingPlate::run()
   if (long_temperature_measurements_.isFull())
   {
     int estimated_temperature = ambient_temperature + calculateRelativeTemperature();
-    if (abs(real_temperature_ - estimated_temperature) > 5 * TEMPERATURE_ESTIMATION_PERIOD / 1000)    // sprawdzenie poprawności sygnału
-      reportError(F("4"));
+    // if (abs(real_temperature_ - estimated_temperature) > MAX_TEMPERATURE_GROWTH * TEMPERATURE_ESTIMATION_PERIOD / 1000)    // sprawdzenie poprawności sygnału
+    //   reportError(F("4"));
 
     real_temperature_ = estimated_temperature;
     long_temperature_measurements_.clear();
@@ -173,7 +174,7 @@ int HeatingPlate::calculateRegulatedHeatingPower()
   if (!active_regulation_)
   {
     active_regulation_ = true;
-    heating_power = tabularConversion(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, set_temperature_);
+    heating_power = tabularConversion<const int, const int>(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, set_temperature_);
   }
   int power_deviation = round(-DERIVATIVE_REGULATION_COEFFICIENT * temperature_derivative_ - PROPORTIONAL_REGULATION_COEFFICIENT * temperature_deviation_
                               - INTEGRAL_REGULATION_COEFFICIENT * temperature_integral_);

@@ -38,11 +38,11 @@ class HeatingPress
     void sendDataToDisplay();
 
     // Obiekt obsługujący interfejs wejściowy składający się z 5-ciu przycisków
-    InputInterface buttons_;
+    InputInterface input_interface_;
     // Tablica przechowujaca instancję dla każdego z wątków
-    SystemElement** threads_ = NULL;
+    SystemElement** threads_ = nullptr;
     // Obiekt obsługujący interfejs wyjściowy składający się z ekranu LCD o 2 wierszach i 16 kolumnach
-    OutputInterface lcd_;
+    OutputInterface output_interface_;
     /* Zmienna przechowująca numer jednego z czterech okien interfejsu:
        0 - informacje o nacisku
        1 - informacje o temperaturze i grzaniu górnej płyty
@@ -59,12 +59,12 @@ class HeatingPress
 void HeatingPress::init()
 {
   // Konfiguracja poszczególnych portów
-  buttons_.init();                                      // przyciski
+  input_interface_.init();                              // przyciski
   for (unsigned int i = 0; i < threads_number_; ++i)    // czujniki nacisku, temperatury oraz przekaźnik
     threads_[i]->init();
 
   // Konfiguracja ekranu LCD
-  lcd_.init();
+  output_interface_.init();
 
   TCCR1B = (TCCR1B & B11111000) | B00000101;    // ustawienie częstotliwości PWM pinów 9 i 10 na 30.64 Hz
   cycle_counter_ = millis() + CYCLE_PERIOD;     // ustawienie wartości licznika czasu
@@ -81,9 +81,9 @@ void HeatingPress::addThread(SystemElement* new_thread)
 
 void HeatingPress::readUserCommands()
 {
-  bool* buttons_activity = buttons_.getButtonsActivity();
+  bool* buttons_activity = input_interface_.getButtonsActivity();
 
-  if (!buttons_.isWindowChanged())
+  if (!input_interface_.isWindowChanged())
   {
     threads_[displayed_thread_id_]->executeCommands(buttons_activity);
     return;
@@ -101,7 +101,7 @@ void HeatingPress::sendDataToDisplay()
 {
   String first_line, second_line;
   threads_[displayed_thread_id_]->getDataToDisplay(first_line, second_line);
-  lcd_.displayData(first_line, second_line, buttons_.isWindowChanged());
+  output_interface_.displayData(first_line, second_line, input_interface_.isWindowChanged());
 }
 
 void HeatingPress::run()
@@ -118,7 +118,7 @@ void HeatingPress::run()
     reportError(F("1"));
 
   // Pobranie stanu wejść każdego z przycisków
-  buttons_.readSignals();
+  input_interface_.readSignals();
 
   // Odczyt interfejsu - działanie przycisków zależy od okna, dla którego zostały aktywowane
   readUserCommands();
@@ -130,7 +130,7 @@ void HeatingPress::run()
   // testTemperatureSensors();
 
   /*TEST WZMACNIACZA*/
-  // testAmplifier(PIN_TEMPERATURE_SENSOR_BOT);
+  // testAmplifier(PIN_TEMPERATURE_SENSOR_TOP);
 
   // Pomiar nacisku oraz wykonanie wszystkich okresowych działań obu płyt grzewczych
   for (unsigned int i = 0; i < threads_number_; ++i)
@@ -151,7 +151,7 @@ void HeatingPress::emergencyShutdown(const String& code)
   String second_line = F("Please restart  ");                     //
   while (true)                                                    // zatrzymanie wykonywania programu
   {
-    lcd_.displayData(first_line, second_line);
+    output_interface_.displayData(first_line, second_line);
     delay(CYCLE_PERIOD);
   };
 }

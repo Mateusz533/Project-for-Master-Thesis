@@ -15,11 +15,11 @@ class PushButton
     // Odczytuje sygnał z portu, uznając stan niski za wciśnięty przycisk
     void readSignal();
     // Zwraca prawdę dla zbocza narastającego oraz fałsz w przypadku jego braku
-    bool isClicked();
+    bool isClicked() const;
     // Zwraca prawdę dla zbocza opadającego oraz fałsz w przypadku jego braku
-    bool isReleased();
+    bool isReleased() const;
     // Zwraca prawdę dla wciśniętego przycisku przez żądaną liczbę cykli oraz fałsz w przeciwnym wypadku
-    bool isPressed(unsigned int min_pressing_time);
+    bool isPressed(unsigned int min_pressing_time) const;
     // Zeruje wszystkie zapamiętane stany przycisku
     void reset();
 
@@ -48,17 +48,17 @@ void PushButton::readSignal()
     time_of_continuous_pressing_ = 0;
 }
 
-bool PushButton::isClicked()
+bool PushButton::isClicked() const
 {
   return currently_pressed_ && !previously_pressed_;    // stan aktywowany zboczem narastającym
 }
 
-bool PushButton::isReleased()
+bool PushButton::isReleased() const
 {
   return !currently_pressed_ && previously_pressed_;    // stan aktywowany zboczem opadającym
 }
 
-bool PushButton::isPressed(unsigned int min_pressing_time = 1)
+bool PushButton::isPressed(unsigned int min_pressing_time = 1) const
 {
   return time_of_continuous_pressing_ >= min_pressing_time;    // stan aktywowany trwającym naciśnięciem
 }

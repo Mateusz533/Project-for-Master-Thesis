@@ -12,11 +12,11 @@ class Queue : public StaticArray<T>
     {
       // inicjalizacja pustej kolejki
     }
-    void push(T new_value);
+    void push(const T new_value);
     T pop();
     void clear();
-    bool isFull();
-    bool isEmpty();
+    bool isFull() const;
+    bool isEmpty() const;
 
   private:
     unsigned int start_ = 0;
@@ -54,13 +54,13 @@ void Queue<T>::clear()
 }
 
 template<class T>
-bool Queue<T>::isFull()
+bool Queue<T>::isFull() const
 {
   return is_full_;
 }
 
 template<class T>
-bool Queue<T>::isEmpty()
+bool Queue<T>::isEmpty() const
 {
   return start_ == end_ && !is_full_;
 }

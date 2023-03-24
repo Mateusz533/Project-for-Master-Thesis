@@ -54,7 +54,7 @@ void testAmplifier(short unsigned int pin_output)
   // Serial.println();
 
   // Filtrowane
-  static Queue<unsigned int> measurements(20);
+  static Queue<unsigned int> measurements(100);
   measurements.push(analogRead(pin_output));
 
   if (!measurements.isFull())
@@ -64,6 +64,7 @@ void testAmplifier(short unsigned int pin_output)
   unsigned int mean_value = measurements.mean_value();
   unsigned int min_value = measurements.min_value();
   unsigned int max_value = measurements.max_value();
+  unsigned int median_value = measurements.quantile(0.5);
   measurements.clear();
 
   Serial.print(mean_value);
@@ -71,6 +72,8 @@ void testAmplifier(short unsigned int pin_output)
   Serial.print(min_value);
   Serial.print(F(","));
   Serial.print(max_value);
+  Serial.print(F(","));
+  Serial.print(median_value);
   Serial.println();
 }
 

@@ -39,15 +39,15 @@ class StaticArray
     }
 
     // Zwraca długość tablicy
-    unsigned int length();
+    unsigned int length() const;
     // Sortowanie tablic przez wstawianie
     void sort();
     // Zwraca minimalną wartość z podanego przedziału tablicy
-    T min_value(unsigned int start = 0, unsigned int end = -1);
+    T min_value(unsigned int start = 0, unsigned int end = -1) const;
     // Zwraca maksymalną wartość z podanego przedziału tablicy
-    T max_value(unsigned int start = 0, unsigned int end = -1);
+    T max_value(unsigned int start = 0, unsigned int end = -1) const;
     // Zwraca średnią z podanego przedziału wartości tablicy
-    T mean_value(unsigned int start = 0, unsigned int end = -1);
+    T mean_value(unsigned int start = 0, unsigned int end = -1) const;
     // Zwraca kwantyl o określonym poziomie z podanego przedziału wartości z tablicy
     T quantile(float quantile_level, unsigned int start = 0, unsigned int end = -1);
 
@@ -57,7 +57,7 @@ class StaticArray
 };
 
 template<class T>
-unsigned int StaticArray<T>::length()
+unsigned int StaticArray<T>::length() const
 {
   return LENGTH_;
 }
@@ -81,10 +81,10 @@ void StaticArray<T>::sort()
 }
 
 template<class T>
-T StaticArray<T>::min_value(unsigned int start, unsigned int end)
+T StaticArray<T>::min_value(unsigned int start, unsigned int end) const
 {
   end = end < LENGTH_ ? end : LENGTH_;
-  unsigned int min_index = value_[start];
+  unsigned int min_index = start;
   for (unsigned int i = start + 1; i < end; ++i)
     if (value_[i] < value_[min_index])
       min_index = i;
@@ -93,10 +93,10 @@ T StaticArray<T>::min_value(unsigned int start, unsigned int end)
 }
 
 template<class T>
-T StaticArray<T>::max_value(unsigned int start, unsigned int end)
+T StaticArray<T>::max_value(unsigned int start, unsigned int end) const
 {
   end = end < LENGTH_ ? end : LENGTH_;
-  unsigned int max_index = value_[start];
+  unsigned int max_index = start;
   for (unsigned int i = start + 1; i < end; ++i)
     if (value_[i] > value_[max_index])
       max_index = i;
@@ -105,7 +105,7 @@ T StaticArray<T>::max_value(unsigned int start, unsigned int end)
 }
 
 template<class T>
-T StaticArray<T>::mean_value(unsigned int start, unsigned int end)
+T StaticArray<T>::mean_value(unsigned int start, unsigned int end) const
 {
   end = end < LENGTH_ ? end : LENGTH_;
   float sum = value_[start];

@@ -10,7 +10,7 @@ class SystemElement
     // Wykonuje pobrane od użytkownika polecania na podstawie wciśniętych przycisków
     virtual void executeCommands(const bool buttons[]) = 0;
     // Wyświetla dane dotyczące tego elementu
-    virtual void getDataToDisplay(String& first_line, String& second_line) = 0;
+    virtual void getDataToDisplay(String& first_line, String& second_line) const = 0;
     // Wykonuje wszystkie funkcje elementu z odpowiednimi częstotliwościami
     virtual void run() = 0;
 

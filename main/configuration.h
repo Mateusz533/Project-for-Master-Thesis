@@ -28,11 +28,37 @@
 #define PRESET_TEMPERATURE_RESOLUTION 5    //
 #define TEMPERATURE_REGULATION_RANGE 30    //
 #define DEFAULT_AMBIENT_TEMPERATURE 20     //
+#define MAX_TEMPERATURE_GROWTH 5           // [*C/s]
 #define MAX_HEATING_POWER 200              // [W]
 #define MAX_HEAT_SIGNAL 255
+#define TEMPERATURE_SIGNAL_LOWER_LIMIT 20
+#define TEMPERATURE_SIGNAL_HIGHER_LIMIT 720
+#define FORCE_SIGNAL_HIGHER_LIMIT 600
 #define PROPORTIONAL_REGULATION_COEFFICIENT 3.72    // wg metody Z-N [W/K]
 #define INTEGRAL_REGULATION_COEFFICIENT 0.105       // wg metody Z-N [W/(K*s)]
 #define DERIVATIVE_REGULATION_COEFFICIENT 0.0       // niepotrzebny  [W*s/K]
+
+// Tabelaryczna charakterystyka czujnika nacisku
+#define FORCE_SIGNAL_VALUES \
+  { \
+    0, 29, 60, 83, 99, 115, 129, 154, 178, 195, 213, 242, 266, 289 \
+  }
+#define FORCE_VALUES \
+  { \
+    0, 5, 10, 20, 30, 40, 50, 70, 90, 110, 130, 150, 170, 200 \
+  }
+#define FORCE_CONVERSION_ARRAY_SIZE 14
+
+// Tabelaryczna zależność mocy grzania od temperatury w stanie ustalonym
+#define TEMPERATURE_VALUES \
+  { \
+    20, 62, 100, 134, 167, 199, 228, 256, 282, 307, 331, 353, 375, 400 \
+  }
+#define HEATING_POWER_VALUES \
+  { \
+    0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65 \
+  }
+#define TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE 14
 
 // Tablica bitów do wyświetlenia symbolu stopnia na ekranie LCD
 #define DEGREE_SYMBOL \
@@ -45,8 +71,11 @@
 #define LCD_COLUMNS_NUMBER 16
 #define LCD_ROWS_NUMBER 2
 
-// Enumerator dla przycisków
+// Parametry przycisków
+#define CONTINUOUS_PRESSING_ACTIVATION_TIME 1000
 #define BUTTONS_NUMBER 5
+
+// Enumerator dla przycisków
 enum Button : short unsigned int
 {
   UP = 0,

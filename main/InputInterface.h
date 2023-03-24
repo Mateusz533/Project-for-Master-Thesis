@@ -20,11 +20,11 @@ class InputInterface
     // Zwraca tablicę aktywności wciśniętych przycisków
     bool* getButtonsActivity();
     // Zwraca zwraca prawdę, gdy okno zostało przełączone oraz fałsz w przeciwnym wypadku
-    bool isWindowChanged();
+    bool isWindowChanged() const;
 
   private:
     // Tablica przechowujaca instancję dla każdego z przycisków
-    PushButton* buttons_ = NULL;
+    PushButton* buttons_ = nullptr;
 };
 
 void InputInterface::init()
@@ -44,8 +44,8 @@ void InputInterface::readSignals()
 bool* InputInterface::getButtonsActivity()
 {
   bool buttons_activity[BUTTONS_NUMBER];
-  buttons_activity[UP] = buttons_[UP].isClicked() || buttons_[UP].isPressed(1000 / CYCLE_PERIOD);
-  buttons_activity[DOWN] = buttons_[DOWN].isClicked() || buttons_[DOWN].isPressed(1000 / CYCLE_PERIOD);
+  buttons_activity[UP] = buttons_[UP].isClicked() || buttons_[UP].isPressed(CONTINUOUS_PRESSING_ACTIVATION_TIME / CYCLE_PERIOD);
+  buttons_activity[DOWN] = buttons_[DOWN].isClicked() || buttons_[DOWN].isPressed(CONTINUOUS_PRESSING_ACTIVATION_TIME / CYCLE_PERIOD);
   buttons_activity[LEFT] = buttons_[LEFT].isClicked();
   buttons_activity[RIGHT] = buttons_[RIGHT].isClicked();
   buttons_activity[ACTION] = buttons_[ACTION].isClicked();
@@ -61,7 +61,7 @@ bool* InputInterface::getButtonsActivity()
   return ptr;
 }
 
-bool InputInterface::isWindowChanged()
+bool InputInterface::isWindowChanged() const
 {
   return buttons_[LEFT].isClicked() != buttons_[RIGHT].isClicked();
 }

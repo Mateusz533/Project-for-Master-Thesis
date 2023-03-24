@@ -3,6 +3,9 @@
 
 // Funkcja konwertująca podany argument wg. funkcji podanej tabelarycznie z interpolacją liniową
 template<typename A, typename V>
+V tabularConversion(StaticArray<A>& args_tab, StaticArray<V>& values_tab, const float& arg);
+
+template<typename A, typename V>
 V tabularConversion(StaticArray<A>& args_tab, StaticArray<V>& values_tab, const float& arg)
 {
   unsigned int CONVERSION_ARRAYS_SIZE_ = min(args_tab.length(), values_tab.length());

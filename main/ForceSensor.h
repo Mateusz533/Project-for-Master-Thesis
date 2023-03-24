@@ -13,8 +13,8 @@ class ForceSensor : public SystemElement
     // Konstruktor
     ForceSensor(short unsigned int pin_force_sensor) :
       PIN_FORCE_SENSOR_(pin_force_sensor),
-      SIGNAL_VALUES_(14, new const int[14]{ 0, 29, 60, 83, 99, 115, 129, 154, 178, 195, 213, 242, 266, 289 }),
-      FORCE_VALUES_(14, new const int[14]{ 0, 5, 10, 20, 30, 40, 50, 70, 90, 110, 130, 150, 170, 200 })
+      SIGNAL_VALUES_(FORCE_CONVERSION_ARRAY_SIZE, new const int[FORCE_CONVERSION_ARRAY_SIZE] FORCE_SIGNAL_VALUES),
+      FORCE_VALUES_(FORCE_CONVERSION_ARRAY_SIZE, new const int[FORCE_CONVERSION_ARRAY_SIZE] FORCE_VALUES)
     {
       // przypisanie numeru pinu w mikrosterowniku
     }
@@ -23,7 +23,7 @@ class ForceSensor : public SystemElement
     // Wykonuje pobrane od użytkownika polecania dotyczące wartości punktu zerowego czujnika siły
     void executeCommands(const bool buttons[]);
     // Wyświetla dane dotyczące czujnika siły
-    void getDataToDisplay(String& first_line, String& second_line);
+    void getDataToDisplay(String& first_line, String& second_line) const;
     // Wykonuje pomiar siły nacisku oraz uśrednia go z określoną częstotliwością
     void run();
 
@@ -53,7 +53,7 @@ void ForceSensor::executeCommands(const bool buttons[])
     force_offset_ = force_;
 }
 
-void ForceSensor::getDataToDisplay(String& first_line, String& second_line)
+void ForceSensor::getDataToDisplay(String& first_line, String& second_line) const
 {
   first_line = F("Force:       N  ");
   String str_force(force_ - force_offset_);
@@ -75,7 +75,7 @@ void ForceSensor::run()
 
   float signal_value = force_measurements_.mean_value();    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
-  if (signal_value > 900)    // sprawdzenie poprawności sygnału
+  if (signal_value > FORCE_SIGNAL_HIGHER_LIMIT)    // sprawdzenie poprawności sygnału
     reportError(F("2"));
 
   force_ = tabularConversion<const int, const int>(SIGNAL_VALUES_, FORCE_VALUES_, signal_value);    // konwersja poziomów ADC na Newtony

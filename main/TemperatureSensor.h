@@ -61,19 +61,15 @@ void TemperatureSensor::measureTemperature()
 
 int TemperatureSensor::calculateRelativeTemperature()
 {
-  const unsigned int LOWER_SIGNAL_LIMIT = 20;
-  const unsigned int HIGHER_SIGNAL_LIMIT = 720;
-  const float QUANTILE = 0.5;
-
   // Sortowanie tablic przez wstawianie
   long_temperature_measurements_.sort();
   unsigned int lower_index = 0;
   unsigned int higher_index = long_temperature_measurements_.length();
   for (unsigned int i = 0; i < long_temperature_measurements_.length(); ++i)
   {
-    if (long_temperature_measurements_[i] < LOWER_SIGNAL_LIMIT)
+    if (long_temperature_measurements_[i] < TEMPERATURE_SIGNAL_LOWER_LIMIT)
       lower_index = i + 1;
-    if (long_temperature_measurements_[i] > HIGHER_SIGNAL_LIMIT)
+    if (long_temperature_measurements_[i] > TEMPERATURE_SIGNAL_HIGHER_LIMIT)
     {
       higher_index = i;
       break;
@@ -84,7 +80,7 @@ int TemperatureSensor::calculateRelativeTemperature()
   //  if (higher_index < lower_index + long_temperature_measurements_.length() / 2.0)
   //    reportError(F("3"));
 
-  float signal_value = long_temperature_measurements_.quantile(QUANTILE, lower_index, higher_index);
+  float signal_value = long_temperature_measurements_.quantile(0.5, lower_index, higher_index);
 
   // Dodatkowa korekta ustawionych mechanicznie wzmocnień wzmacniaczy sygnałów temperatury
   return round(TUNING_FACTOR_ * (signal_value - SENSOR_OFFSET_));
