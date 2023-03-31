@@ -77,6 +77,29 @@ void testAmplifier(short unsigned int pin_output)
   Serial.println();
 }
 
+void testHeaters()
+{
+  // Filtrowane
+  static Queue<unsigned int> top_measurements(50);
+  top_measurements.push(analogRead(PIN_TEMPERATURE_SENSOR_TOP));
+  static Queue<unsigned int> bot_measurements(50);
+  bot_measurements.push(analogRead(PIN_TEMPERATURE_SENSOR_BOT));
+
+  if (!top_measurements.isFull())
+    return;
+
+  // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
+  unsigned int top_value = top_measurements.quantile(0.5);
+  unsigned int bot_value = bot_measurements.quantile(0.5);
+  top_measurements.clear();
+  bot_measurements.clear();
+
+  Serial.print(top_value);
+  Serial.print(F(","));
+  Serial.print(bot_value);
+  Serial.println();
+}
+
 void testTimeSynchronization(long unsigned int timer)
 {
   Serial.print(millis() - timer);

@@ -17,7 +17,7 @@
 // Okresy poszczególnych części programu
 #define CYCLE_PERIOD 10                       // [ms]
 #define FORCE_ESTIMATION_PERIOD 1000          // powinny być wielokrotnościami okresu cyklu podstawowego
-#define TEMPERATURE_AVERAGING_PERIOD 200      //
+#define TEMPERATURE_AVERAGING_PERIOD 100      //
 #define TEMPERATURE_ESTIMATION_PERIOD 1000    // powinien być dodatkowo wielokrotnością okresu uśredniania
 #define DISPLAYED_DATA_DIVISOR 32             // powinien być potęgą liczby 2 z przedziału 2 - 32
 #define SCREEN_REFRESH_PERIOD 320             // powinien być dodatkowo wielokrotnością dzielnika powyżej
@@ -26,28 +26,28 @@
 #define MIN_TEMPERATURE 20                 // [*C]
 #define MAX_TEMPERATURE 400                //
 #define PRESET_TEMPERATURE_RESOLUTION 5    //
-#define TEMPERATURE_REGULATION_RANGE 30    //
+#define TEMPERATURE_REGULATION_RANGE 0     //
 #define DEFAULT_AMBIENT_TEMPERATURE 20     //
 #define MAX_TEMPERATURE_GROWTH 5           // [*C/s]
-#define MAX_HEATING_POWER 200              // [W]
+#define MAX_HEATING_POWER 400              // [W]
 #define MAX_HEAT_SIGNAL 255
 #define TEMPERATURE_SIGNAL_LOWER_LIMIT 20
 #define TEMPERATURE_SIGNAL_HIGHER_LIMIT 720
 #define FORCE_SIGNAL_HIGHER_LIMIT 600
-#define PROPORTIONAL_REGULATION_COEFFICIENT 3.72    // wg metody Z-N [W/K]
-#define INTEGRAL_REGULATION_COEFFICIENT 0.105       // wg metody Z-N [W/(K*s)]
+#define PROPORTIONAL_REGULATION_COEFFICIENT 82.3    // wg metody Z-N [W/K]
+#define INTEGRAL_REGULATION_COEFFICIENT 10.2        // wg metody Z-N [W/(K*s)]
 #define DERIVATIVE_REGULATION_COEFFICIENT 0.0       // niepotrzebny  [W*s/K]
 
 // Tabelaryczna charakterystyka czujnika nacisku
 #define FORCE_SIGNAL_VALUES \
   { \
-    0, 29, 60, 83, 99, 115, 129, 154, 178, 195, 213, 242, 266, 289 \
+    0, 1, 117, 261, 333, 378, 409, 432, 449, 463, 474, 483, 491, 498, 504, 509, 513, 517, 521, 524, 527 \
   }
 #define FORCE_VALUES \
   { \
-    0, 5, 10, 20, 30, 40, 50, 70, 90, 110, 130, 150, 170, 200 \
+    0, 16, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200 \
   }
-#define FORCE_CONVERSION_ARRAY_SIZE 14
+#define FORCE_CONVERSION_ARRAY_SIZE 21
 
 // Tabelaryczna zależność mocy grzania od temperatury w stanie ustalonym
 #define TEMPERATURE_VALUES \

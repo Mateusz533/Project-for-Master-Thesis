@@ -13,8 +13,8 @@ void setup()
 {
   // Utworzenie instancji dla czujnika, każdej grzałki oraz ustawień ogólnych
   device.addThread(new ForceSensor(PIN_FORCE_SENSOR));
-  device.addThread(new HeatingPlate(PIN_TEMPERATURE_SENSOR_TOP, PIN_HEAT_SUPPLY_TOP, 0.6, 50.0, F("TOP")));    //(400/16.432/200*5000/1023, 50)
-  device.addThread(new HeatingPlate(PIN_TEMPERATURE_SENSOR_BOT, PIN_HEAT_SUPPLY_BOT, 0.6, 50.0, F("BOT")));
+  device.addThread(new HeatingPlate(PIN_TEMPERATURE_SENSOR_TOP, PIN_HEAT_SUPPLY_TOP, 0.765, 48.0, F("TOP")));
+  device.addThread(new HeatingPlate(PIN_TEMPERATURE_SENSOR_BOT, PIN_HEAT_SUPPLY_BOT, 0.729, 43.0, F("BOT")));
   device.addThread(new SettingsController());
 
   // Konfiguracja wszystkich elementów oraz wyświetlenie informacji o urządzeniu

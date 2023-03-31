@@ -132,6 +132,9 @@ void HeatingPress::run()
   /*TEST WZMACNIACZA*/
   // testAmplifier(PIN_TEMPERATURE_SENSOR_TOP);
 
+  /*TEST GRZAŁEK*/
+  testHeaters();
+
   // Pomiar nacisku oraz wykonanie wszystkich okresowych działań obu płyt grzewczych
   for (unsigned int i = 0; i < threads_number_; ++i)
     threads_[i]->run();
