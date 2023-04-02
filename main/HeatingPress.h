@@ -3,7 +3,7 @@
 #include "OutputInterface.h"
 #include "SystemElement.h"
 #include "reportError.h"
-#include "hardwareTests.h"
+#include "HardwareTester.h"
 #pragma once
 
 // Klasa przechowująca parametry prasy grzewczej
@@ -68,9 +68,6 @@ void HeatingPress::init()
 
   TCCR1B = (TCCR1B & B11111000) | B00000101;    // ustawienie częstotliwości PWM pinów 9 i 10 na 30.64 Hz
   cycle_counter_ = millis() + CYCLE_PERIOD;     // ustawienie wartości licznika czasu
-
-  /*KONFIGURACJA PORTU SZEREGOWEGO - WYŁĄCZNIE DO TESTÓW*/
-  Serial.begin(9600);
 }
 
 void HeatingPress::addThread(SystemElement* new_thread)
@@ -123,27 +120,12 @@ void HeatingPress::run()
   // Odczyt interfejsu - działanie przycisków zależy od okna, dla którego zostały aktywowane
   readUserCommands();
 
-  /*TEST CZUJNIKA NACISKU*/
-  // testForceSensor();
-
-  /*TEST CZUJNIKÓW TEMPERATTURY*/
-  // testTemperatureSensors();
-
-  /*TEST WZMACNIACZA*/
-  // testAmplifier(PIN_TEMPERATURE_SENSOR_TOP);
-
-  /*TEST GRZAŁEK*/
-  testHeaters();
-
   // Pomiar nacisku oraz wykonanie wszystkich okresowych działań obu płyt grzewczych
   for (unsigned int i = 0; i < threads_number_; ++i)
     threads_[i]->run();
 
   // Wyświetlenie danych z określoną częstotliwością - w przypadku przełączenia okna następuje niezwłocznie
   sendDataToDisplay();
-
-  /*TEST SYNCHRONIZACJI CZASU*/
-  // testTimeSynchronization(timer);
 }
 
 void HeatingPress::emergencyShutdown(const String& code)

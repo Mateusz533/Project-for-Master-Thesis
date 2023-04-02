@@ -1,17 +1,72 @@
 #include "configuration.h"
+#include "SystemElement.h"
 #include "Queue.h"
 #pragma once
 
-// Przekazuje dane o mierzonej sile nacisku przez port szeregowy
-void testForceSensor();
-// Przekazuje dane o mierzonej temperaturze przez port szeregowy
-void testTemperatureSensors();
-// Ustawia na wejściu wzmacniacza zadaną wartość napięcia (w poziomach DAC)
-void testAmplifier(short unsigned int pin_number, short unsigned int pin_output, short unsigned int signal_value);
-// Przekazuje dane o różnicy czasu w danej chwili od podanej wartości
-void testTimeSynchronization(long unsigned int timer);
+class HardwareTester : public SystemElement
+{
+  public:
+    // Konfiguruje porty wejścia/wyjścia dla tego elementu
+    void init();
+    // Wykonuje pobrane od użytkownika polecania na podstawie wciśniętych przycisków
+    void executeCommands(const bool buttons[]);
+    // Wyświetla dane dotyczące tego elementu
+    void getDataToDisplay(String& first_line, String& second_line) const;
+    // Wykonuje wszystkie funkcje elementu z odpowiednimi częstotliwościami
+    void run();
 
-void testForceSensor()
+  private:
+    // Przekazuje przez port szeregowy dane o mierzonej sile nacisku
+    void testForceSensor();
+    // Przekazuje przez port szeregowy surowe dane o mierzonym sygnale temperatury
+    void testTemperatureSensors();
+    // Odczytuje sygnał z wyjścia wzmacniacza napięcia (w poziomach ADC)
+    void testAmplifier(short unsigned int pin_output);
+    // Przekazuje przez port szeregowy dane potrzebne do wyznaczenia charakterystyki cieplnej urządzenia
+    void testHeaters();
+    // Przekazuje dane o różnicy czasu w danej chwili od podanej wartości
+    void testTimeSynchronization(long unsigned int timer);
+
+    // Licznik umożliwiający testowanie synchronizacji programu
+    long unsigned int cycle_counter_ = 0;
+};
+
+void HardwareTester::init()
+{
+  // Konfiguracja portu szeregowego
+  Serial.begin(9600);
+  cycle_counter_ = millis() + CYCLE_PERIOD;    // ustawienie wartości licznika czasu
+}
+
+void HardwareTester::executeCommands(const bool buttons[]) {}
+
+void HardwareTester::getDataToDisplay(String& first_line, String& second_line) const
+{
+  first_line = F("This is hardware");
+  second_line = F("tests window    ");
+}
+
+void HardwareTester::run()
+{
+  cycle_counter_ += CYCLE_PERIOD;
+
+  /*TEST CZUJNIKA NACISKU*/
+  // testForceSensor();
+
+  /*TEST CZUJNIKÓW TEMPERATTURY*/
+  // testTemperatureSensors();
+
+  /*TEST WZMACNIACZA*/
+  // testAmplifier(PIN_TEMPERATURE_SENSOR_TOP);
+
+  /*TEST GRZAŁEK*/
+  testHeaters();
+
+  /*TEST SYNCHRONIZACJI CZASU*/
+  // testTimeSynchronization(cycle_counter_);
+}
+
+void HardwareTester::testForceSensor()
 {
   //// Niefiltrowane
   //Serial.print(analogRead(PIN_FORCE_SENSOR));
@@ -39,7 +94,7 @@ void testForceSensor()
   Serial.println();
 }
 
-void testTemperatureSensors()
+void HardwareTester::testTemperatureSensors()
 {
   Serial.print(analogRead(PIN_TEMPERATURE_SENSOR_TOP));
   Serial.print(F(","));
@@ -47,7 +102,7 @@ void testTemperatureSensors()
   Serial.println();
 }
 
-void testAmplifier(short unsigned int pin_output)
+void HardwareTester::testAmplifier(short unsigned int pin_output)
 {
   //// Niefiltrowane
   // Serial.print(analogRead(pin_output));
@@ -77,7 +132,7 @@ void testAmplifier(short unsigned int pin_output)
   Serial.println();
 }
 
-void testHeaters()
+void HardwareTester::testHeaters()
 {
   // Filtrowane
   static Queue<unsigned int> top_measurements(50);
@@ -100,7 +155,7 @@ void testHeaters()
   Serial.println();
 }
 
-void testTimeSynchronization(long unsigned int timer)
+void HardwareTester::testTimeSynchronization(long unsigned int timer)
 {
   Serial.print(millis() - timer);
   Serial.println();
