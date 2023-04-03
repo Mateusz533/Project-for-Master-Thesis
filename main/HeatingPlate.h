@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include "configuration.h"
 #include "SystemElement.h"
 #include "TemperatureSensor.h"
@@ -42,6 +43,7 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
 
     // Zmienne przechowujące zadane wartości grzania
     bool is_heating_set_ = false;
+    int heating_power_ = 0;
     int set_temperature_ = 200;
     int real_temperature_ = 20;
     // Zmienne regulacji
@@ -54,8 +56,8 @@ class HeatingPlate : public SystemElement, public TemperatureSensor
     // Wyświetlana nazwa grzałki
     const String DISPLAYED_NAME_;
     // Tablice konwersji temperatury na moc w stanie ustalonym
-    StaticArray<const int> TEMPERATURE_VALUES_;
-    StaticArray<const int> HEATING_POWER_VALUES_;
+    const StaticArray<const int> TEMPERATURE_VALUES_;
+    const StaticArray<const int> HEATING_POWER_VALUES_;
 };
 
 void HeatingPlate::init()
@@ -171,21 +173,20 @@ void HeatingPlate::regulateHeatingPower()
 
 int HeatingPlate::calculateRegulatedHeatingPower()
 {
-  static int heating_power = 0;
   if (!active_regulation_)
   {
     active_regulation_ = true;
-    heating_power = tabularConversion<const int, const int>(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, set_temperature_);
+    heating_power_ = tabularConversion<const int, const int>(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, set_temperature_);
   }
   int power_deviation = round(-DERIVATIVE_REGULATION_COEFFICIENT * temperature_derivative_ - PROPORTIONAL_REGULATION_COEFFICIENT * temperature_deviation_
                               - INTEGRAL_REGULATION_COEFFICIENT * temperature_integral_);
-  heating_power = constrain(heating_power + power_deviation, 0, max_heating_power);
-  return heating_power;
+  heating_power_ = constrain(heating_power_ + power_deviation, 0, max_heating_power);
+  return heating_power_;
 }
 
 void HeatingPlate::setHeatingPower(int heating_power)
 {
   heating_power = constrain(heating_power, 0, max_heating_power);
-  heating_power = map(heating_power, 0, MAX_HEATING_POWER, 0, MAX_HEAT_SIGNAL);
-  analogWrite(PIN_HEAT_SUPPLY_, MAX_HEAT_SIGNAL - heating_power);    // przekaźnik wyzwalany stanem niskim
+  short unsigned int heating_signal = round(1.0 * heating_power / MAX_HEATING_POWER * MAX_HEAT_SIGNAL);
+  analogWrite(PIN_HEAT_SUPPLY_, MAX_HEAT_SIGNAL - heating_signal);    // przekaźnik wyzwalany stanem niskim
 }

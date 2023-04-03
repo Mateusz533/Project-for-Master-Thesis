@@ -37,8 +37,8 @@ class ForceSensor : public SystemElement
     // Numer pinu przypisanego do czujnika
     const short unsigned int PIN_FORCE_SENSOR_ = 0;
     // Tablice konwersji pomiaru siły w poziomach ADC na Newtony
-    StaticArray<const int> SIGNAL_VALUES_;
-    StaticArray<const int> FORCE_VALUES_;
+    const StaticArray<const int> SIGNAL_VALUES_;
+    const StaticArray<const int> FORCE_VALUES_;
 };
 
 void ForceSensor::init()
@@ -80,7 +80,7 @@ void ForceSensor::run()
 
   force_ = tabularConversion<const int, const int>(SIGNAL_VALUES_, FORCE_VALUES_, signal_value);    // konwersja poziomów ADC na Newtony
 
-  is_overloaded_ = (force_ >= FORCE_VALUES_[FORCE_VALUES_.length() - 1]);    // sprawdzenie przeciążenia czujnika
+  is_overloaded_ = (force_ >= FORCE_VALUES_.get(FORCE_VALUES_.length() - 1));    // sprawdzenie przeciążenia czujnika
 
   force_measurements_.clear();
 }

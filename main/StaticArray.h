@@ -40,6 +40,8 @@ class StaticArray
 
     // Zwraca długość tablicy
     unsigned int length() const;
+    // Pobiera element o zadanym indeksie
+    T get(unsigned int index) const;
     // Sortowanie tablic przez wstawianie
     void sort();
     // Zwraca minimalną wartość z podanego przedziału tablicy
@@ -60,6 +62,12 @@ template<class T>
 unsigned int StaticArray<T>::length() const
 {
   return LENGTH_;
+}
+
+template<class T>
+T StaticArray<T>::get(unsigned int index) const
+{
+  return value_[index];
 }
 
 template<class T>
