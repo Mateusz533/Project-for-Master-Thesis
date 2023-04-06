@@ -12,10 +12,15 @@ class Queue : public StaticArray<T>
     {
       // inicjalizacja pustej kolejki
     }
+    // Dodaje nową wartość na koniec kolejki
     void push(const T new_value);
+    // Pobiera wartość z początku kolejki
     T pop();
+    // Usuwa wszystkie elementy z kolejki
     void clear();
+    // Zwraca prawdę, jeśli kolejka jest pusta
     bool isFull() const;
+    // Zwraca fałsz, jeśli kolejka jest pełna
     bool isEmpty() const;
 
   private:

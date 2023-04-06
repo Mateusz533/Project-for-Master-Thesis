@@ -1,7 +1,7 @@
 #include "configuration.h"
 #include "InputInterface.h"
 #include "OutputInterface.h"
-#include "SystemElement.h"
+#include "DisplayedElement.h"
 #include "reportError.h"
 #include "HardwareTester.h"
 #pragma once
@@ -15,7 +15,7 @@ class HeatingPress
       MAX_THREADS_NUMBER_(max_threads_number)
     {
       // Zarezerwowanie pamięci na każdy z wątków
-      threads_ = new SystemElement*[MAX_THREADS_NUMBER_];
+      threads_ = new DisplayedElement*[MAX_THREADS_NUMBER_];
     }
     // Destruktor
     ~HeatingPress()
@@ -23,7 +23,7 @@ class HeatingPress
       reportError(F("?"));
     }
     // Dodaje podany element do systemu jako nowy wątek
-    void addThread(SystemElement* new_thread);
+    void addThread(DisplayedElement* new_thread);
     // Inicjalizuje urządzenie konfigurując wszystkie porty, ekran, liczniki oraz wyświetlając wprowadzenie
     void init();
     // Wykonuje jeden cykl działania systemu w przypadku nadejścia odpowiadającego mu czasu
@@ -40,7 +40,7 @@ class HeatingPress
     // Obiekt obsługujący interfejs wejściowy składający się z 5-ciu przycisków
     InputInterface input_interface_;
     // Tablica przechowujaca instancję dla każdego z wątków
-    SystemElement** threads_ = nullptr;
+    DisplayedElement** threads_ = nullptr;
     // Obiekt obsługujący interfejs wyjściowy składający się z ekranu LCD o 2 wierszach i 16 kolumnach
     OutputInterface output_interface_;
     /* Zmienna przechowująca numer jednego z czterech okien interfejsu:
@@ -70,7 +70,7 @@ void HeatingPress::init()
   cycle_counter_ = millis() + CYCLE_PERIOD;     // ustawienie wartości licznika czasu
 }
 
-void HeatingPress::addThread(SystemElement* new_thread)
+void HeatingPress::addThread(DisplayedElement* new_thread)
 {
   if (threads_number_ < MAX_THREADS_NUMBER_)
     threads_[threads_number_++] = new_thread;

@@ -1,9 +1,9 @@
 #include "configuration.h"
-#include "SystemElement.h"
+#include "DisplayedElement.h"
 #pragma once
 
 // Klasa przechowująca zmieniane przez użytkownika parametry globalne
-class SettingsController : public SystemElement
+class SettingsController : public DisplayedElement
 {
   public:
     // Konstruktor

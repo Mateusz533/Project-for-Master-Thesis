@@ -1,5 +1,5 @@
 #include "configuration.h"
-#include "SystemElement.h"
+#include "DisplayedElement.h"
 #include "StaticArray.h"
 #include "Queue.h"
 #include "tabularConversion.h"
@@ -7,7 +7,7 @@
 #pragma once
 
 // Klasa przechowująca parametry czujnika nacisku
-class ForceSensor : public SystemElement
+class ForceSensor : public DisplayedElement
 {
   public:
     // Konstruktor

@@ -14,23 +14,24 @@ class TemperatureSensor
       TUNING_FACTOR_(tuning_factor),
       SENSOR_OFFSET_(sensor_offset)
     {
-      // przypisanie numerów pinów w mikrosterowniku
+      // przypisanie numeru pinu w mikrosterowniku
       // ustawienie wartości czynnika korygującego rzeczywistą wartość wzmocnienia wzmacniacza
     }
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
-
-  protected:
     // Wykonuje pomiary temperatury i filtruje dolnoprzepustowo z określoną częstotliwością
     void measureTemperature();
     // Zwraca oszacowaną różnicę temperatur pomiędzy płytą a otoczeniem na podstawie zebranych pomiarów
     int calculateRelativeTemperature();
+    // Zwraca prawdę, jeśli buffor danych pomiarowych jest pełny
+    bool isBufferFull();
+    // Czyści buffor danych pomiarowych
+    void clearBuffer();
 
+  private:
     // Zmienne przechowujące aktualne wartości temperatury
     Queue<float> long_temperature_measurements_ = Queue<float>(TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD);
     Queue<int> short_temperature_measurements_ = Queue<int>(TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD);
-
-  private:
     // Numer pinu przypisanego do czujnika
     const short unsigned int PIN_TEMPERATURE_SENSOR_ = 0;
     // Czynnik dostrojenia wzmacniacza oraz stałe przesunięcie sygnału
@@ -84,4 +85,15 @@ int TemperatureSensor::calculateRelativeTemperature()
 
   // Dodatkowa korekta ustawionych mechanicznie wzmocnień wzmacniaczy sygnałów temperatury
   return round(TUNING_FACTOR_ * (signal_value - SENSOR_OFFSET_));
+}
+
+bool TemperatureSensor::isBufferFull()
+{
+  return long_temperature_measurements_.isFull();
+}
+
+void TemperatureSensor::clearBuffer()
+{
+  long_temperature_measurements_.clear();
+  short_temperature_measurements_.clear();
 }

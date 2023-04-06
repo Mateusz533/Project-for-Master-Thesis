@@ -1,9 +1,9 @@
 #include "configuration.h"
-#include "SystemElement.h"
+#include "DisplayedElement.h"
 #include "Queue.h"
 #pragma once
 
-class HardwareTester : public SystemElement
+class HardwareTester : public DisplayedElement
 {
   public:
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
@@ -51,7 +51,7 @@ void HardwareTester::run()
   cycle_counter_ += CYCLE_PERIOD;
 
   /*TEST CZUJNIKA NACISKU*/
-  // testForceSensor();
+  testForceSensor();
 
   /*TEST CZUJNIKÓW TEMPERATTURY*/
   // testTemperatureSensors();
@@ -60,7 +60,7 @@ void HardwareTester::run()
   // testAmplifier(PIN_TEMPERATURE_SENSOR_TOP);
 
   /*TEST GRZAŁEK*/
-  testHeaters();
+  // testHeaters();
 
   /*TEST SYNCHRONIZACJI CZASU*/
   // testTimeSynchronization(cycle_counter_);
