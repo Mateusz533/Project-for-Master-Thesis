@@ -5,24 +5,25 @@ template<class T>
 class StaticArray
 {
   public:
+    StaticArray() = delete;
     // Konstruktor pobierający długość tablicy
     StaticArray(unsigned int length) :
-      LENGTH_(length),
-      value_(new T[length])
+      LENGTH_{ length },
+      value_{ new T[length] }
     {
       // ustawienie stałej wielkości tablicy i stałego jej adresu
     }
     // Konstruktor pobierający tablicę wraz z jej długością
     StaticArray(unsigned int length, T* array) :
-      LENGTH_(length),
-      value_(array)
+      LENGTH_{ length },
+      value_{ array }
     {
       // przypisanie długości oraz wskaźnika - płytka kopia tablicy
     }
     // Konstruktor kopiujący - wykonuje kopię głęboką
     StaticArray(const StaticArray<T>& right) :
-      LENGTH_(right.LENGTH_),
-      value_(new T[right.LENGTH_])
+      LENGTH_{ right.LENGTH_ },
+      value_{ new T[right.LENGTH_] }
     {
       for (unsigned int i = 0; i < LENGTH_; ++i)
         value_[i] = right.value_[i];
@@ -54,8 +55,8 @@ class StaticArray
     T quantile(float quantile_level, unsigned int start = 0, unsigned int end = -1);
 
   private:
-    const unsigned int LENGTH_ = 0;
-    T* const value_ = nullptr;
+    const unsigned int LENGTH_{ 0 };
+    T* const value_{ nullptr };
 };
 
 template<class T>

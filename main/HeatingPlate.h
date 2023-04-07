@@ -11,26 +11,28 @@
 class HeatingPlate : public DisplayedElement, public Heater
 {
   public:
+    HeatingPlate() = delete;
     // Konstruktor
     HeatingPlate(short unsigned int pin_temperature_sensor, short unsigned int pin_heat_supply, float tuning_factor, float sensor_offset, const String& name) :
-      Heater(pin_heat_supply),
-      temperature_sensor(pin_temperature_sensor, tuning_factor, sensor_offset),
-      DISPLAYED_NAME_(name)
+      Heater{ pin_heat_supply },
+      temperature_sensor{ pin_temperature_sensor, tuning_factor, sensor_offset },
+      DISPLAYED_NAME_{ name }
     {
       // przypisanie numerów pinów w mikrosterowniku
     }
+    ~HeatingPlate() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
-    void init();
-    // Wykonuje pobrane od użytkownika polecania dotyczące zadanej temperatury oraz stanu grzania
-    void executeCommands(const bool buttons[]);
-    // Wyświetla dane dotyczące płyty grzewczej
-    void getDataToDisplay(String& first_line, String& second_line) const;
+    void init() override;
     // Wykonuje wszystkie funkcje płyty z odpowiednimi dla nich częstotliwościami
-    void run();
+    void run() override;
+    // Wykonuje pobrane od użytkownika polecania dotyczące zadanej temperatury oraz stanu grzania
+    void executeCommands(const bool buttons[]) override;
+    // Wyświetla dane dotyczące płyty grzewczej
+    void getDataToDisplay(String& first_line, String& second_line) const override;
 
   private:
     // Instatncja czujnika temperatury
-    TemperatureSensor temperature_sensor = TemperatureSensor(0, 1.0, 0.0);
+    TemperatureSensor temperature_sensor{ 0, 1.0, 0.0 };
     // Wyświetlana nazwa grzałki
     const String DISPLAYED_NAME_;
 };

@@ -3,13 +3,16 @@
 #include "Queue.h"
 #pragma once
 
+// Klasa przeznaczona wyłącznie do testów sprzętu
 class HardwareTester : public SystemElement
 {
   public:
+    HardwareTester() = default;
+    ~HardwareTester() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
-    void init();
+    void init() override;
     // Wykonuje wszystkie funkcje elementu z odpowiednimi częstotliwościami
-    void run();
+    void run() override;
 
   private:
     // Przekazuje przez port szeregowy dane o mierzonej sile nacisku
@@ -24,7 +27,7 @@ class HardwareTester : public SystemElement
     void testTimeSynchronization(long unsigned int timer);
 
     // Licznik umożliwiający testowanie synchronizacji programu
-    long unsigned int cycle_counter_ = 0;
+    long unsigned int cycle_counter_{ 0 };
 };
 
 void HardwareTester::init()

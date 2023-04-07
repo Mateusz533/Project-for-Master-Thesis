@@ -14,10 +14,15 @@ class InputInterface : public SystemElement
         PushButton(PIN_PB_UP), PushButton(PIN_PB_DOWN), PushButton(PIN_PB_LEFT), PushButton(PIN_PB_RIGHT), PushButton(PIN_PB_ACTION),
       };
     }
+    // Destruktor
+    ~InputInterface()
+    {
+      delete[] buttons_;
+    }
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
-    void init();
+    void init() override;
     // Odczytuje sygnały z portów dla każdego z przycisków
-    void run();
+    void run() override;
     // Zwraca tablicę aktywności wciśniętych przycisków
     bool* getButtonsActivity();
     // Zwraca zwraca prawdę, gdy okno zostało przełączone oraz fałsz w przeciwnym wypadku
@@ -25,8 +30,8 @@ class InputInterface : public SystemElement
 
   private:
     // Tablica przechowujaca instancję dla każdego z przycisków
-    PushButton* buttons_ = nullptr;
-    bool is_ready_ = false;
+    PushButton* buttons_{ nullptr };
+    bool is_ready_{ false };
 };
 
 void InputInterface::init()
@@ -64,7 +69,7 @@ bool* InputInterface::getButtonsActivity()
     buttons_[ACTION].reset();
   }
 
-  bool* ptr = buttons_activity;
+  bool* ptr{ buttons_activity };
   return ptr;
 }
 

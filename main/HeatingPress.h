@@ -10,6 +10,7 @@
 class HeatingPress
 {
   public:
+    HeatingPress() = delete;
     // Konstruktor
     HeatingPress(short unsigned int allocated_threads_number = 4)
     {
@@ -42,17 +43,18 @@ class HeatingPress
         // Konstruktor domyślny
         Thread() = default;
         Thread(SystemElement* task, unsigned int counter, unsigned int overflow) :
-          task(task),
-          counter(counter),
-          overflow(overflow)
+          task{ task },
+          counter{ counter },
+          overflow{ overflow }
         {
           // Przypisanie wszystkich pól struktury
         }
+        ~Thread() = default;
         // Wskaźnik do instancji danego wątku
-        SystemElement* task = nullptr;
+        SystemElement* task{ nullptr };
         // Liczniki umożliwiające wykonywanie zadań z odpowiednimi częstotliwościami
-        unsigned int counter = 0;
-        unsigned int overflow = 1;
+        unsigned int counter{ 0 };
+        unsigned int overflow{ 1 };
     };
 
     // Wykonuje polecenia użytkownika na podstawie wciśniętych przycisków
@@ -63,9 +65,9 @@ class HeatingPress
     // Obiekt obsługujący interfejs wejściowy składający się z 5-ciu przycisków
     InputInterface input_interface_;
     // Tablica przechowujaca instancję każdego z wątków
-    Thread* threads_ = nullptr;
+    Thread* threads_{ nullptr };
     // Tablica przechowujaca wskaźnik do instancji każdego z okien
-    DisplayedElement** windows_ = nullptr;
+    DisplayedElement** windows_{ nullptr };
     // Obiekt obsługujący interfejs wyjściowy składający się z ekranu LCD o 2-ch wierszach i 16-stu kolumnach
     OutputInterface output_interface_;
     /* Zmienna przechowująca numer jednego z czterech okien interfejsu:
@@ -74,13 +76,13 @@ class HeatingPress
        2 - informacje o temperaturze i grzaniu dolnej płyty
        3 - informacje o parametrach globalnych
     */
-    short int displayed_window_id_ = 0;
-    short unsigned int threads_number_ = 0;
-    short unsigned int windows_number_ = 0;
-    short unsigned int allocated_threads_number_ = 4;
-    short unsigned int allocated_windows_number_ = 4;
+    short int displayed_window_id_{ 0 };
+    short unsigned int threads_number_{ 0 };
+    short unsigned int windows_number_{ 0 };
+    short unsigned int allocated_threads_number_{ 4 };
+    short unsigned int allocated_windows_number_{ 4 };
     // Licznik umożliwiający synchroniczne wykonywanie programu
-    long unsigned int cycle_counter_ = 0;
+    long unsigned int cycle_counter_{ 0 };
 };
 
 void HeatingPress::init()

@@ -6,12 +6,14 @@ template<class T>
 class Queue : public StaticArray<T>
 {
   public:
+    Queue() = delete;
     // Konstruktor pobierający długość kolejki
     Queue(unsigned int length) :
-      StaticArray<T>(length)
+      StaticArray<T>{ length }
     {
       // inicjalizacja pustej kolejki
     }
+    ~Queue() = default;
     // Dodaje nową wartość na koniec kolejki
     void push(const T new_value);
     // Pobiera wartość z początku kolejki
@@ -24,9 +26,9 @@ class Queue : public StaticArray<T>
     bool isEmpty() const;
 
   private:
-    unsigned int start_ = 0;
-    unsigned int end_ = 0;
-    bool is_full_ = 0;
+    unsigned int start_{ 0 };
+    unsigned int end_{ 0 };
+    bool is_full_{ 0 };
 };
 
 template<class T>

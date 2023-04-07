@@ -9,7 +9,7 @@ template<typename A, typename V>
 V tabularConversion(const StaticArray<A>& args_tab, const StaticArray<V>& values_tab, const float& arg)
 {
   unsigned int CONVERSION_ARRAYS_SIZE_ = min(args_tab.length(), values_tab.length());
-  float value = 0;
+  float value{ 0 };
 
   for (unsigned int i = 1; i < CONVERSION_ARRAYS_SIZE_; ++i)
   {

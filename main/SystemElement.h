@@ -5,6 +5,7 @@
 class SystemElement
 {
   public:
+    virtual ~SystemElement() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     virtual void init() = 0;
     // Wykonuje wszystkie funkcje elementu z odpowiednimi częstotliwościami

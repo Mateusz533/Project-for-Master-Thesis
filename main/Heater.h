@@ -6,16 +6,18 @@
 class Heater : public SystemElement
 {
   public:
+    Heater() = delete;
     // Konstruktor
     Heater(short unsigned int pin_heat_supply) :
-      PIN_HEAT_SUPPLY_(pin_heat_supply),
-      TEMPERATURE_VALUES_(TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE, new const int[TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE] TEMPERATURE_VALUES),
-      HEATING_POWER_VALUES_(TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE, new const int[TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE] HEATING_POWER_VALUES)
+      PIN_HEAT_SUPPLY_{ pin_heat_supply },
+      TEMPERATURE_VALUES_{ TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE, new const int[TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE] TEMPERATURE_VALUES },
+      HEATING_POWER_VALUES_{ TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE, new const int[TEMPERATURE_TO_POWER_CONVERSION_ARRAY_SIZE] HEATING_POWER_VALUES }
     {
       // przypisanie numeru pinu w mikrosterowniku
     }
+    ~Heater() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
-    void init();
+    void init() override;
     // Włącza/wyłącza grzanie w podczas każdego cyklu zgodnie z zadaną wartością
     void manageHeating();
     // Ustawia moc grzania potrzebną do osiągnięcia zadanej temperatury
@@ -25,20 +27,20 @@ class Heater : public SystemElement
     // Zwraca obliczoną moc grzania, potrzebną do optymalnej regulacji temperatury w danej chwili
     int calculateRegulatedHeatingPower();
     // Ustawia wprowadzoną moc grzania [W]
-    void setHeatingPower(int new_heating_power);
+    void setHeatingPower(const int new_heating_power);
 
     // Zmienne przechowujące zadane wartości grzania
-    bool is_heating_set_ = false;
-    int heating_power_ = 0;
-    int set_temperature_ = 200;
-    int real_temperature_ = 20;
+    bool is_heating_set_{ false };
+    int heating_power_{ 0 };
+    int set_temperature_{ 200 };
+    int real_temperature_{ 20 };
     // Zmienne regulacji
-    bool active_regulation_ = false;
-    int temperature_deviation_ = 0;     // [K]
-    int temperature_derivative_ = 0;    // [K/s]
-    int temperature_integral_ = 0;      // [K*s]
+    bool active_regulation_{ false };
+    int temperature_deviation_{ 0 };     // [K]
+    int temperature_derivative_{ 0 };    // [K/s]
+    int temperature_integral_{ 0 };      // [K*s]
     // Numer pinu przypisanego do grzałki
-    const short unsigned int PIN_HEAT_SUPPLY_ = 1;
+    const short unsigned int PIN_HEAT_SUPPLY_{ 1 };
     // Tablice konwersji temperatury na moc w stanie ustalonym
     const StaticArray<const int> TEMPERATURE_VALUES_;
     const StaticArray<const int> HEATING_POWER_VALUES_;
@@ -71,7 +73,7 @@ void Heater::regulateHeatingPower()
   temperature_integral_ += 1.0 * temperature_deviation_ * TEMPERATURE_ESTIMATION_PERIOD / 1000;
   // temperature_integral_ = constrain(temperature_integral_, -max_heating_power / INTEGRAL_REGULATION_COEFFICIENT, max_heating_power / INTEGRAL_REGULATION_COEFFICIENT);
 
-  int heat_supply = 0;
+  int heat_supply{ 0 };
   if (temperature_deviation_ < -TEMPERATURE_REGULATION_RANGE)    // procedura regulacji
   {
     active_regulation_ = false;
@@ -116,7 +118,7 @@ int Heater::calculateRegulatedHeatingPower()
   return new_heating_power;
 }
 
-void Heater::setHeatingPower(int new_heating_power)
+void Heater::setHeatingPower(const int new_heating_power)
 {
   heating_power_ = constrain(new_heating_power, 0, MAX_HEATING_POWER);
   short unsigned int heating_signal = round(1.0 * heating_power_ / MAX_HEATING_POWER * MAX_HEAT_SIGNAL);

@@ -4,12 +4,14 @@
 class PushButton
 {
   public:
+    PushButton() = delete;
     // Konstruktor
     PushButton(short unsigned int pin) :
-      PIN_(pin)
+      PIN_{ pin }
     {
       // przypisanie numeru pinu w mikrosterowniku
     }
+    ~PushButton() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
     // Odczytuje sygnał z portu, uznając stan niski za wciśnięty przycisk
@@ -25,11 +27,11 @@ class PushButton
 
   private:
     // Zmienne przechowujące ostatnie stany przycisku
-    bool currently_pressed_ = false;
-    bool previously_pressed_ = false;
-    unsigned int time_of_continuous_pressing_ = 0;    // czas ciągłego wciśnęcia mierzony liczbą cykli
+    bool currently_pressed_{ false };
+    bool previously_pressed_{ false };
+    unsigned int time_of_continuous_pressing_{ 0 };    // czas ciągłego wciśnęcia mierzony liczbą cykli
     // Numer pinu przypisany do przycisku
-    const short unsigned int PIN_ = 0;
+    const short unsigned int PIN_{ 0 };
 };
 
 void PushButton::init()

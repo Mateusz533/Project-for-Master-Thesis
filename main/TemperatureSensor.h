@@ -8,15 +8,17 @@
 class TemperatureSensor
 {
   public:
+    TemperatureSensor() = delete;
     // Konstruktor
     TemperatureSensor(short unsigned int pin_temperature_sensor, float tuning_factor, float sensor_offset) :
-      PIN_TEMPERATURE_SENSOR_(pin_temperature_sensor),
-      TUNING_FACTOR_(tuning_factor),
-      SENSOR_OFFSET_(sensor_offset)
+      PIN_TEMPERATURE_SENSOR_{ pin_temperature_sensor },
+      TUNING_FACTOR_{ tuning_factor },
+      SENSOR_OFFSET_{ sensor_offset }
     {
       // przypisanie numeru pinu w mikrosterowniku
       // ustawienie wartości czynnika korygującego rzeczywistą wartość wzmocnienia wzmacniacza
     }
+    ~TemperatureSensor() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
     // Wykonuje pomiary temperatury i filtruje dolnoprzepustowo z określoną częstotliwością
@@ -24,19 +26,19 @@ class TemperatureSensor
     // Zwraca oszacowaną różnicę temperatur pomiędzy płytą a otoczeniem na podstawie zebranych pomiarów
     int calculateRelativeTemperature();
     // Zwraca prawdę, jeśli buffor danych pomiarowych jest pełny
-    bool isBufferFull();
+    bool isBufferFull() const;
     // Czyści buffor danych pomiarowych
     void clearBuffer();
 
   private:
     // Zmienne przechowujące aktualne wartości temperatury
-    Queue<float> long_temperature_measurements_ = Queue<float>(TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD);
-    Queue<int> short_temperature_measurements_ = Queue<int>(TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD);
+    Queue<float> long_temperature_measurements_{ TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD };
+    Queue<int> short_temperature_measurements_{ TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD };
     // Numer pinu przypisanego do czujnika
-    const short unsigned int PIN_TEMPERATURE_SENSOR_ = 0;
+    const short unsigned int PIN_TEMPERATURE_SENSOR_{ 0 };
     // Czynnik dostrojenia wzmacniacza oraz stałe przesunięcie sygnału
-    const float TUNING_FACTOR_ = 1;
-    const float SENSOR_OFFSET_ = 0;
+    const float TUNING_FACTOR_{ 1 };
+    const float SENSOR_OFFSET_{ 0 };
 };
 
 void TemperatureSensor::init()
@@ -64,7 +66,7 @@ int TemperatureSensor::calculateRelativeTemperature()
 {
   // Sortowanie tablic przez wstawianie
   long_temperature_measurements_.sort();
-  unsigned int lower_index = 0;
+  unsigned int lower_index{ 0 };
   unsigned int higher_index = long_temperature_measurements_.length();
   for (unsigned int i = 0; i < long_temperature_measurements_.length(); ++i)
   {
@@ -87,7 +89,7 @@ int TemperatureSensor::calculateRelativeTemperature()
   return round(TUNING_FACTOR_ * (signal_value - SENSOR_OFFSET_));
 }
 
-bool TemperatureSensor::isBufferFull()
+bool TemperatureSensor::isBufferFull() const
 {
   return long_temperature_measurements_.isFull();
 }
