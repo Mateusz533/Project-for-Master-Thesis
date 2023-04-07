@@ -1,7 +1,5 @@
 #pragma once
 
-#define LCD_ADRESS 0x27    // ustawienie adresu układu na 0x27
-
 // Oznaczenia pinów w mikrokontrolerze
 #define PIN_PB_UP 2
 #define PIN_PB_DOWN 3
@@ -16,7 +14,10 @@
 
 // Okresy poszczególnych części programu
 #define CYCLE_PERIOD 10                       // [ms]
-#define FORCE_ESTIMATION_PERIOD 1000          // powinny być wielokrotnościami okresu cyklu podstawowego
+#define BUTTONS_REFRESH_PERIOD 50             // powinny być wielokrotnościami okresu cyklu podstawowego
+#define FORCE_MEASUREMENT_PERIOD 10           //
+#define FORCE_ESTIMATION_PERIOD 1000          //
+#define TEMPERATURE_MEASUREMENT_PERIOD 10     //
 #define TEMPERATURE_AVERAGING_PERIOD 100      //
 #define TEMPERATURE_ESTIMATION_PERIOD 1000    // powinien być dodatkowo wielokrotnością okresu uśredniania
 #define DISPLAYED_DATA_DIVISOR 32             // powinien być potęgą liczby 2 z przedziału 2 - 32
@@ -33,10 +34,12 @@
 #define MAX_HEAT_SIGNAL 255
 #define TEMPERATURE_SIGNAL_LOWER_LIMIT 20
 #define TEMPERATURE_SIGNAL_HIGHER_LIMIT 720
-#define FORCE_SIGNAL_HIGHER_LIMIT 600
 #define PROPORTIONAL_REGULATION_COEFFICIENT 82.3    // wg metody Z-N [W/K]
 #define INTEGRAL_REGULATION_COEFFICIENT 10.2        // wg metody Z-N [W/(K*s)]
 #define DERIVATIVE_REGULATION_COEFFICIENT 0.0       // niepotrzebny  [W*s/K]
+
+// Parametry czujnika nacisku
+#define FORCE_SIGNAL_HIGHER_LIMIT 600
 
 // Tabelaryczna charakterystyka czujnika nacisku
 #define FORCE_SIGNAL_VALUES \
@@ -68,6 +71,7 @@
 #define DEGREE_SYMBOL_INDEX '\1'
 
 // Parametry ekranu LCD
+#define LCD_ADRESS 0x27
 #define LCD_COLUMNS_NUMBER 16
 #define LCD_ROWS_NUMBER 2
 

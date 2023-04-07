@@ -1,8 +1,9 @@
 #include "PushButton.h"
+#include "SystemElement.h"
 #pragma once
 
 // Klasa przechowująca wszystkie przyciski interfejsu wejściowego
-class InputInterface
+class InputInterface : public SystemElement
 {
   public:
     // Konstruktor
@@ -16,7 +17,7 @@ class InputInterface
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
     // Odczytuje sygnały z portów dla każdego z przycisków
-    void readSignals();
+    void run();
     // Zwraca tablicę aktywności wciśniętych przycisków
     bool* getButtonsActivity();
     // Zwraca zwraca prawdę, gdy okno zostało przełączone oraz fałsz w przeciwnym wypadku
@@ -25,6 +26,7 @@ class InputInterface
   private:
     // Tablica przechowujaca instancję dla każdego z przycisków
     PushButton* buttons_ = nullptr;
+    bool is_ready_ = false;
 };
 
 void InputInterface::init()
@@ -34,18 +36,23 @@ void InputInterface::init()
     buttons_[i].init();
 }
 
-void InputInterface::readSignals()
+void InputInterface::run()
 {
   // Pobranie stanu wejść, gdy stan niski oznacza wciśnięty przycisk
   for (unsigned int i = 0; i < BUTTONS_NUMBER; ++i)
     buttons_[i].readSignal();
+  is_ready_ = true;
 }
 
 bool* InputInterface::getButtonsActivity()
 {
+  if (!is_ready_)
+    return nullptr;
+
+  is_ready_ = false;
   bool buttons_activity[BUTTONS_NUMBER];
-  buttons_activity[UP] = buttons_[UP].isClicked() || buttons_[UP].isPressed(CONTINUOUS_PRESSING_ACTIVATION_TIME / CYCLE_PERIOD);
-  buttons_activity[DOWN] = buttons_[DOWN].isClicked() || buttons_[DOWN].isPressed(CONTINUOUS_PRESSING_ACTIVATION_TIME / CYCLE_PERIOD);
+  buttons_activity[UP] = buttons_[UP].isClicked() || buttons_[UP].isPressed(CONTINUOUS_PRESSING_ACTIVATION_TIME / BUTTONS_REFRESH_PERIOD);
+  buttons_activity[DOWN] = buttons_[DOWN].isClicked() || buttons_[DOWN].isPressed(CONTINUOUS_PRESSING_ACTIVATION_TIME / BUTTONS_REFRESH_PERIOD);
   buttons_activity[LEFT] = buttons_[LEFT].isClicked();
   buttons_activity[RIGHT] = buttons_[RIGHT].isClicked();
   buttons_activity[ACTION] = buttons_[ACTION].isClicked();

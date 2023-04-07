@@ -1,14 +1,17 @@
 #include <LiquidCrystal_I2C.h>    // biblioteka obsługująca ekran z magistralą I2C
+#include "SystemElement.h"
 #pragma once
 
 // Klasa przechowująca interfejs wyjściowy w postaci ekranu LCD
-class OutputInterface
+class OutputInterface : public SystemElement
 {
   public:
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
-    // Wyświetla przekazane dane z określoną częstotliwością, w przypadku wymuszenia natychmiast wyświetla ustaloną część danych
-    void displayData(String& first_line, String& second_line, const bool force_refresh = false);
+    // Wyświetla przekazane dane z określoną częstotliwością
+    void run();
+    // Zapisuje przekazane dane do wyświetlenia, w przypadku wymuszenia natychmiast wyświetla ustaloną część danych
+    void setDisplayedData(const String& first_line, const String& second_line, const bool force_refresh = false);
 
   private:
     // Wyświetla informacje o urządzeniu
@@ -16,6 +19,11 @@ class OutputInterface
 
     // Obiekt obsługujący ekran LCD o 2 wierszach i 16 kolumnach
     LiquidCrystal_I2C lcd_ = LiquidCrystal_I2C(LCD_ADRESS, LCD_COLUMNS_NUMBER, LCD_ROWS_NUMBER);
+    // Zmienne przechowujące dane do wyświetlenia oraz indeks wyświetlanego obecnie
+    String first_line_;
+    String second_line_;
+    unsigned int index_ = 0;
+    const unsigned int CHARS_NUMBER_ = LCD_ROWS_NUMBER * LCD_COLUMNS_NUMBER / DISPLAYED_DATA_DIVISOR;
 };
 
 void OutputInterface::init()
@@ -29,33 +37,28 @@ void OutputInterface::init()
   displayIntroduction();                           // wyświetlenie informacji o urządzeniu
 }
 
-void OutputInterface::displayData(String& first_line, String& second_line, const bool force_refresh)
+void OutputInterface::run()
 {
-  static const unsigned int REFRESH_COUNTER_OVERFLOW = SCREEN_REFRESH_PERIOD / CYCLE_PERIOD / DISPLAYED_DATA_DIVISOR;
-  static const unsigned int CHARS_NUMBER = LCD_ROWS_NUMBER * LCD_COLUMNS_NUMBER / DISPLAYED_DATA_DIVISOR;
-  static unsigned int refresh_counter = 0;
-  static unsigned int index = 0;
-
-  ++refresh_counter;
-  if (refresh_counter < REFRESH_COUNTER_OVERFLOW && !force_refresh)
-    return;
-
-  refresh_counter = 0;
-  if (force_refresh)
-    index = 0;
-
-  if (index < LCD_COLUMNS_NUMBER)
+  if (index_ < LCD_COLUMNS_NUMBER)
   {
-    lcd_.setCursor(index, 0);
-    lcd_.print(first_line.substring(index, index + CHARS_NUMBER));
+    lcd_.setCursor(index_, 0);
+    lcd_.print(first_line_.substring(index_, index_ + CHARS_NUMBER_));
   }
   else
   {
-    lcd_.setCursor(index - LCD_COLUMNS_NUMBER, 1);
-    lcd_.print(second_line.substring(index - LCD_COLUMNS_NUMBER, index + CHARS_NUMBER - LCD_COLUMNS_NUMBER));
+    lcd_.setCursor(index_ - LCD_COLUMNS_NUMBER, 1);
+    lcd_.print(second_line_.substring(index_ - LCD_COLUMNS_NUMBER, index_ + CHARS_NUMBER_ - LCD_COLUMNS_NUMBER));
   }
-  index += CHARS_NUMBER;
-  index %= LCD_ROWS_NUMBER * LCD_COLUMNS_NUMBER;
+  index_ += CHARS_NUMBER_;
+  index_ %= LCD_ROWS_NUMBER * LCD_COLUMNS_NUMBER;
+}
+
+void OutputInterface::setDisplayedData(const String& first_line, const String& second_line, const bool force_refresh)
+{
+  first_line_ = first_line;
+  second_line_ = second_line;
+  if (force_refresh)
+    index_ = 0;
 }
 
 void OutputInterface::displayIntroduction()

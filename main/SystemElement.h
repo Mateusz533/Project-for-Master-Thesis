@@ -1,7 +1,7 @@
 #include "configuration.h"
 #pragma once
 
-// Klasa abstrakcyjna, nadrzędna dla czujnika nacisku oraz płyt grzewczych
+// Klasa abstrakcyjna, nadrzędna dla każdego elementu działającego jako osobny wątek
 class SystemElement
 {
   public:

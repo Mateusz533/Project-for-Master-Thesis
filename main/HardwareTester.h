@@ -1,17 +1,13 @@
 #include "configuration.h"
-#include "DisplayedElement.h"
+#include "SystemElement.h"
 #include "Queue.h"
 #pragma once
 
-class HardwareTester : public DisplayedElement
+class HardwareTester : public SystemElement
 {
   public:
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
-    // Wykonuje pobrane od użytkownika polecania na podstawie wciśniętych przycisków
-    void executeCommands(const bool buttons[]);
-    // Wyświetla dane dotyczące tego elementu
-    void getDataToDisplay(String& first_line, String& second_line) const;
     // Wykonuje wszystkie funkcje elementu z odpowiednimi częstotliwościami
     void run();
 
@@ -36,14 +32,6 @@ void HardwareTester::init()
   // Konfiguracja portu szeregowego
   Serial.begin(9600);
   cycle_counter_ = millis() + CYCLE_PERIOD;    // ustawienie wartości licznika czasu
-}
-
-void HardwareTester::executeCommands(const bool buttons[]) {}
-
-void HardwareTester::getDataToDisplay(String& first_line, String& second_line) const
-{
-  first_line = F("This is hardware");
-  second_line = F("tests window    ");
 }
 
 void HardwareTester::run()
