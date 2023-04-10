@@ -27,16 +27,16 @@
 #define MIN_TEMPERATURE 20                 // [*C]
 #define MAX_TEMPERATURE 400                //
 #define PRESET_TEMPERATURE_RESOLUTION 5    //
-#define TEMPERATURE_REGULATION_RANGE 0     //
+#define TEMPERATURE_REGULATION_RANGE 20     //
 #define DEFAULT_AMBIENT_TEMPERATURE 20     //
 #define MAX_TEMPERATURE_GROWTH 5           // [*C/s]
 #define MAX_HEATING_POWER 400              // [W]
 #define MAX_HEAT_SIGNAL 255
 #define TEMPERATURE_SIGNAL_LOWER_LIMIT 20
 #define TEMPERATURE_SIGNAL_HIGHER_LIMIT 720
-#define PROPORTIONAL_REGULATION_COEFFICIENT 82.3    // wg metody Z-N [W/K]
-#define INTEGRAL_REGULATION_COEFFICIENT 10.2        // wg metody Z-N [W/(K*s)]
-#define DERIVATIVE_REGULATION_COEFFICIENT 0.0       // niepotrzebny  [W*s/K]
+#define PROPORTIONAL_REGULATION_COEFFICIENT 6.5    // wg metody Z-N [W/K]
+#define INTEGRAL_REGULATION_COEFFICIENT 0.075      // wg metody Z-N [W/(K*s)]
+#define DERIVATIVE_REGULATION_COEFFICIENT 0.0      // niepotrzebny  [W*s/K]
 
 // Parametry czujnika nacisku
 #define FORCE_SIGNAL_HIGHER_LIMIT 600

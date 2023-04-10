@@ -79,9 +79,9 @@ int TemperatureSensor::calculateRelativeTemperature()
     }
   }
 
-  //  // Cyfrowa filtracja szumów poprzez filtr medianowy
-  //  if (higher_index < lower_index + long_temperature_measurements_.length() / 2.0)
-  //    reportError(F("3"));
+  // Cyfrowa filtracja szumów poprzez filtr medianowy
+  if (higher_index < lower_index + long_temperature_measurements_.length() / 2.0)
+    reportError(F("3"));
 
   float signal_value = long_temperature_measurements_.quantile(0.5, lower_index, higher_index);
 

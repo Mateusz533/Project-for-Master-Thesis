@@ -71,7 +71,7 @@ void Heater::regulateHeatingPower()
     return;
 
   temperature_integral_ += 1.0 * temperature_deviation_ * TEMPERATURE_ESTIMATION_PERIOD / 1000;
-  // temperature_integral_ = constrain(temperature_integral_, -max_heating_power / INTEGRAL_REGULATION_COEFFICIENT, max_heating_power / INTEGRAL_REGULATION_COEFFICIENT);
+  temperature_integral_ = constrain(temperature_integral_, -max_heating_power / INTEGRAL_REGULATION_COEFFICIENT, max_heating_power / INTEGRAL_REGULATION_COEFFICIENT);
 
   int heat_supply{ 0 };
   if (temperature_deviation_ < -TEMPERATURE_REGULATION_RANGE)    // procedura regulacji
@@ -93,16 +93,19 @@ void Heater::regulateHeatingPower()
   setHeatingPower(heat_supply);
 
   // Sprawdzenie poprawności grzania
-  // float predicted_temperature_change = 5e-6 * (heat_supply - tabularConversion(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, real_temperature_)) * TEMPERATURE_ESTIMATION_PERIOD;
-  // float real_temperature_change = (temperature_derivative_ * TEMPERATURE_ESTIMATION_PERIOD / 1000) % PRESET_TEMPERATURE_RESOLUTION;
-  // if (2 * abs(real_temperature_change) > PRESET_TEMPERATURE_RESOLUTION)
-  //   real_temperature_change -= PRESET_TEMPERATURE_RESOLUTION * abs(real_temperature_change) / real_temperature_change;
-  // static float prediction_error = 0;
-  // float current_error = real_temperature_change - predicted_temperature_change;
-  // current_error = current_error == 0 ? 0 : current_error / max(abs(real_temperature_change), abs(predicted_temperature_change));
-  // prediction_error = 0.9 * prediction_error + 0.1 * current_error;
-  // if (abs(prediction_error) > 0.9)
-  //   reportError(F("5"));
+  if (active_regulation_)
+    return;
+  float predicted_temperature_change = 4.2e-6 * (heat_supply - tabularConversion(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, real_temperature_)) * TEMPERATURE_ESTIMATION_PERIOD;
+  float real_temperature_change = (temperature_derivative_ * TEMPERATURE_ESTIMATION_PERIOD / 1000) % PRESET_TEMPERATURE_RESOLUTION;
+  if (2 * abs(real_temperature_change) > PRESET_TEMPERATURE_RESOLUTION)
+    real_temperature_change -= PRESET_TEMPERATURE_RESOLUTION * abs(real_temperature_change) / real_temperature_change;
+  static float prediction_error{ 0 };
+  float current_error = real_temperature_change - predicted_temperature_change;
+  current_error = current_error == 0 ? 0 : current_error / max(abs(real_temperature_change), abs(predicted_temperature_change));
+  float weight = 0.05 * predicted_temperature_change;
+  prediction_error = (1.0 - weight) * prediction_error + weight * current_error;
+  if (abs(prediction_error) > 0.9)
+    reportError(F("5"));
 }
 
 int Heater::calculateRegulatedHeatingPower()

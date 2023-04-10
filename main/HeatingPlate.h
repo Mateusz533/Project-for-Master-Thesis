@@ -85,8 +85,8 @@ void HeatingPlate::run()
   if (temperature_sensor.isBufferFull())
   {
     int estimated_temperature = ambient_temperature + temperature_sensor.calculateRelativeTemperature();
-    // if (abs(real_temperature_ - estimated_temperature) > MAX_TEMPERATURE_GROWTH * TEMPERATURE_ESTIMATION_PERIOD / 1000)    // sprawdzenie poprawności sygnału
-    //   reportError(F("4"));
+    if (abs(real_temperature_ - estimated_temperature) > MAX_TEMPERATURE_GROWTH * TEMPERATURE_ESTIMATION_PERIOD / 1000)    // sprawdzenie poprawności sygnału
+      reportError(F("4"));
 
     real_temperature_ = estimated_temperature;
     temperature_sensor.clearBuffer();

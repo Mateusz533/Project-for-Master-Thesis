@@ -55,7 +55,7 @@ bool* InputInterface::getButtonsActivity()
     return nullptr;
 
   is_ready_ = false;
-  bool buttons_activity[BUTTONS_NUMBER];
+  static bool buttons_activity[BUTTONS_NUMBER];
   buttons_activity[UP] = buttons_[UP].isClicked() || buttons_[UP].isPressed(CONTINUOUS_PRESSING_ACTIVATION_TIME / BUTTONS_REFRESH_PERIOD);
   buttons_activity[DOWN] = buttons_[DOWN].isClicked() || buttons_[DOWN].isPressed(CONTINUOUS_PRESSING_ACTIVATION_TIME / BUTTONS_REFRESH_PERIOD);
   buttons_activity[LEFT] = buttons_[LEFT].isClicked();
@@ -69,8 +69,7 @@ bool* InputInterface::getButtonsActivity()
     buttons_[ACTION].reset();
   }
 
-  bool* ptr{ buttons_activity };
-  return ptr;
+  return buttons_activity;
 }
 
 bool InputInterface::isWindowChanged() const
