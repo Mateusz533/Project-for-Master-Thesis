@@ -33,12 +33,14 @@ class Heater : public SystemElement
     bool is_heating_set_{ false };
     int heating_power_{ 0 };
     int set_temperature_{ 200 };
-    int real_temperature_{ 20 };
+    float real_temperature_{ ambient_temperature };
     // Zmienne regulacji
     bool active_regulation_{ false };
-    int temperature_deviation_{ 0 };     // [K]
-    int temperature_derivative_{ 0 };    // [K/s]
-    int temperature_integral_{ 0 };      // [K*s]
+    float temperature_deviation_{ 0 };     // [K]
+    float temperature_derivative_{ 0 };    // [K/s]
+    float temperature_integral_{ 0 };      // [K*s]
+    // Zmienna diagnostyczna
+    float prediction_error_{ 0 };
     // Numer pinu przypisanego do grzałki
     const short unsigned int PIN_HEAT_SUPPLY_{ 1 };
     // Tablice konwersji temperatury na moc w stanie ustalonym
@@ -64,13 +66,16 @@ void Heater::manageHeating()
 
 void Heater::regulateHeatingPower()
 {
-  temperature_derivative_ = 1.0 * (real_temperature_ - set_temperature_ - temperature_deviation_) * 1000 / TEMPERATURE_ESTIMATION_PERIOD;    // zamiana ms w s
+  temperature_derivative_ = (real_temperature_ - set_temperature_ - temperature_deviation_) * 1000 / TEMPERATURE_ESTIMATION_PERIOD;    // zamiana ms w s
   temperature_deviation_ = real_temperature_ - set_temperature_;
 
   if (!is_heating_set_)
+  {
+    prediction_error_ = 0;
     return;
+  }
 
-  temperature_integral_ += 1.0 * temperature_deviation_ * TEMPERATURE_ESTIMATION_PERIOD / 1000;
+  temperature_integral_ += temperature_deviation_ * TEMPERATURE_ESTIMATION_PERIOD / 1000;
   temperature_integral_ = constrain(temperature_integral_, -max_heating_power / INTEGRAL_REGULATION_COEFFICIENT, max_heating_power / INTEGRAL_REGULATION_COEFFICIENT);
 
   int heat_supply{ 0 };
@@ -92,19 +97,15 @@ void Heater::regulateHeatingPower()
   }
   setHeatingPower(heat_supply);
 
-  // Sprawdzenie poprawności grzania
-  if (active_regulation_)
-    return;
-  float predicted_temperature_change = 4.2e-6 * (heat_supply - tabularConversion(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, real_temperature_)) * TEMPERATURE_ESTIMATION_PERIOD;
-  float real_temperature_change = (temperature_derivative_ * TEMPERATURE_ESTIMATION_PERIOD / 1000) % PRESET_TEMPERATURE_RESOLUTION;
-  if (2 * abs(real_temperature_change) > PRESET_TEMPERATURE_RESOLUTION)
-    real_temperature_change -= PRESET_TEMPERATURE_RESOLUTION * abs(real_temperature_change) / real_temperature_change;
-  static float prediction_error{ 0 };
-  float current_error = real_temperature_change - predicted_temperature_change;
-  current_error = current_error == 0 ? 0 : current_error / max(abs(real_temperature_change), abs(predicted_temperature_change));
-  float weight = 0.05 * predicted_temperature_change;
-  prediction_error = (1.0 - weight) * prediction_error + weight * current_error;
-  if (abs(prediction_error) > 0.9)
+  // Sprawdzenie poprawności grzania w jego początkowym etapie
+  const float WEIGHT{ 0.01 };
+  float balance_power = tabularConversion(TEMPERATURE_VALUES_, HEATING_POWER_VALUES_, real_temperature_);
+  float predicted_temperature_growth = 0.0042 * (heating_power_ - balance_power);
+  float real_temperature_growth = constrain(temperature_derivative_, -3.0, 3.0);
+  float current_error = real_temperature_growth - predicted_temperature_growth;
+  prediction_error_ = (1.0 - WEIGHT) * prediction_error_ + WEIGHT * current_error;
+
+  if (ENABLE_ERRORS && abs(prediction_error_) > 0.1 + 1.5 * max(heating_power_, balance_power) / MAX_HEATING_POWER)
     reportError(F("5"));
 }
 

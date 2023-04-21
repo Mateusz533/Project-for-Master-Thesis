@@ -1,7 +1,7 @@
 #pragma once
 
 // Klasa szblonowa przechowująca tablicę o stałej długości wraz z metodami umożliwiającymi efektywne zarządzanie
-template<class T>
+template<typename T>
 class StaticArray
 {
   public:
@@ -59,19 +59,19 @@ class StaticArray
     T* const value_{ nullptr };
 };
 
-template<class T>
+template<typename T>
 unsigned int StaticArray<T>::length() const
 {
   return LENGTH_;
 }
 
-template<class T>
+template<typename T>
 T StaticArray<T>::get(unsigned int index) const
 {
   return value_[index];
 }
 
-template<class T>
+template<typename T>
 void StaticArray<T>::sort()
 {
   for (unsigned int i = 0; i < LENGTH_; ++i)
@@ -89,7 +89,7 @@ void StaticArray<T>::sort()
   return;
 }
 
-template<class T>
+template<typename T>
 T StaticArray<T>::min_value(unsigned int start, unsigned int end) const
 {
   end = end < LENGTH_ ? end : LENGTH_;
@@ -101,7 +101,7 @@ T StaticArray<T>::min_value(unsigned int start, unsigned int end) const
   return value_[min_index];
 }
 
-template<class T>
+template<typename T>
 T StaticArray<T>::max_value(unsigned int start, unsigned int end) const
 {
   end = end < LENGTH_ ? end : LENGTH_;
@@ -113,7 +113,7 @@ T StaticArray<T>::max_value(unsigned int start, unsigned int end) const
   return value_[max_index];
 }
 
-template<class T>
+template<typename T>
 T StaticArray<T>::mean_value(unsigned int start, unsigned int end) const
 {
   end = end < LENGTH_ ? end : LENGTH_;
@@ -124,7 +124,7 @@ T StaticArray<T>::mean_value(unsigned int start, unsigned int end) const
   return static_cast<T>(sum) == sum ? sum / (end - start) : round(sum / (end - start));
 }
 
-template<class T>
+template<typename T>
 T StaticArray<T>::quantile(float quantile_level, unsigned int start, unsigned int end)
 {
   end = end < LENGTH_ ? end : LENGTH_;

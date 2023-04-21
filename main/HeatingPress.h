@@ -161,13 +161,13 @@ void HeatingPress::run()
 {
   // Wykonywanie programu z określoną częstotliwością
   long unsigned int timer = millis();
-  if (cycle_counter_ > timer + CYCLE_PERIOD)
+  if (ENABLE_ERRORS && cycle_counter_ > timer + CYCLE_PERIOD)
     reportError(F("0"));
   if (cycle_counter_ > timer)
     return;
 
   cycle_counter_ += CYCLE_PERIOD;
-  if (cycle_counter_ < timer)
+  if (ENABLE_ERRORS && cycle_counter_ < timer)
     reportError(F("1"));
 
   // Wykonanie wszystkich wątków z przypisanymi do nich częstotliwościami

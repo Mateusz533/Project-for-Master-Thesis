@@ -13,42 +13,46 @@
 #define PIN_TEMPERATURE_SENSOR_BOT A3
 
 // Okresy poszczególnych części programu
-#define CYCLE_PERIOD 10                       // [ms]
-#define BUTTONS_REFRESH_PERIOD 50             // powinny być wielokrotnościami okresu cyklu podstawowego
-#define FORCE_MEASUREMENT_PERIOD 10           //
-#define FORCE_ESTIMATION_PERIOD 1000          //
-#define TEMPERATURE_MEASUREMENT_PERIOD 10     //
-#define TEMPERATURE_AVERAGING_PERIOD 100      //
-#define TEMPERATURE_ESTIMATION_PERIOD 1000    // powinien być dodatkowo wielokrotnością okresu uśredniania
-#define DISPLAYED_DATA_DIVISOR 32             // powinien być potęgą liczby 2 z przedziału 2 - 32
-#define SCREEN_REFRESH_PERIOD 320             // powinien być dodatkowo wielokrotnością dzielnika powyżej
+#define CYCLE_PERIOD 9                       // [ms]
+#define BUTTONS_REFRESH_PERIOD 45            // powinny być wielokrotnościami okresu cyklu podstawowego
+#define FORCE_MEASUREMENT_PERIOD 9           //
+#define FORCE_ESTIMATION_PERIOD 180          //
+#define TEMPERATURE_MEASUREMENT_PERIOD 9     //
+#define TEMPERATURE_AVERAGING_PERIOD 90      //
+#define TEMPERATURE_ESTIMATION_PERIOD 900    // powinien być dodatkowo wielokrotnością okresu uśredniania
+#define DISPLAYED_DATA_DIVISOR 32            // powinien być potęgą liczby 2 z przedziału 2 - 32
+#define SCREEN_REFRESH_PERIOD 288            // powinien być dodatkowo wielokrotnością dzielnika powyżej
+
+// Parametry diagnostyki
+#define ENABLE_ERRORS true                     // zezwolenie na przerwanie działania urządzenia w przypadku błędu
+#define FORCE_SIGNAL_HIGHER_LIMIT 600          //
+#define TEMPERATURE_SIGNAL_LOWER_LIMIT 20      //
+#define TEMPERATURE_SIGNAL_HIGHER_LIMIT 720    //
+#define MAX_TEMPERATURE_GROWTH 15.0            // [*C/s]
+
+// Parametry czujnika nacisku
+#define START_OFFSET -5    // [N]
 
 // Parametry grzania oraz regulacji temperatury
 #define MIN_TEMPERATURE 20                 // [*C]
 #define MAX_TEMPERATURE 400                //
 #define PRESET_TEMPERATURE_RESOLUTION 5    //
-#define TEMPERATURE_REGULATION_RANGE 20     //
+#define TEMPERATURE_REGULATION_RANGE 20    //
 #define DEFAULT_AMBIENT_TEMPERATURE 20     //
-#define MAX_TEMPERATURE_GROWTH 5           // [*C/s]
 #define MAX_HEATING_POWER 400              // [W]
 #define MAX_HEAT_SIGNAL 255
-#define TEMPERATURE_SIGNAL_LOWER_LIMIT 20
-#define TEMPERATURE_SIGNAL_HIGHER_LIMIT 720
-#define PROPORTIONAL_REGULATION_COEFFICIENT 6.5    // wg metody Z-N [W/K]
-#define INTEGRAL_REGULATION_COEFFICIENT 0.075      // wg metody Z-N [W/(K*s)]
-#define DERIVATIVE_REGULATION_COEFFICIENT 0.0      // niepotrzebny  [W*s/K]
-
-// Parametry czujnika nacisku
-#define FORCE_SIGNAL_HIGHER_LIMIT 600
+#define PROPORTIONAL_REGULATION_COEFFICIENT 6.5    // [W/K] dobrane z wykorzystaniem symulacji
+#define INTEGRAL_REGULATION_COEFFICIENT 0.075      // [W/(K*s)]
+#define DERIVATIVE_REGULATION_COEFFICIENT 0.0      // [W*s/K] niepotrzebny
 
 // Tabelaryczna charakterystyka czujnika nacisku
 #define FORCE_SIGNAL_VALUES \
   { \
-    0, 1, 117, 261, 333, 378, 409, 432, 449, 463, 474, 483, 491, 498, 504, 509, 513, 517, 521, 524, 527 \
+    0, 16, 36, 50, 61, 70, 78, 85, 92, 97, 103, 108, 113, 117, 121, 125, 129, 133, 137, 140, 144 \
   }
 #define FORCE_VALUES \
   { \
-    0, 16, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200 \
+    0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200 \
   }
 #define FORCE_CONVERSION_ARRAY_SIZE 21
 

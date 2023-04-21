@@ -2,7 +2,7 @@
 #pragma once
 
 // Klasa szblonowa implementująca kolejkę o ograniczonej długości
-template<class T>
+template<typename T>
 class Queue : public StaticArray<T>
 {
   public:
@@ -31,7 +31,7 @@ class Queue : public StaticArray<T>
     bool is_full_{ 0 };
 };
 
-template<class T>
+template<typename T>
 void Queue<T>::push(T new_value)
 {
   (*this)[end_++] = new_value;
@@ -42,7 +42,7 @@ void Queue<T>::push(T new_value)
     is_full_ = true;
 }
 
-template<class T>
+template<typename T>
 T Queue<T>::pop()
 {
   T value = this[start_];
@@ -54,19 +54,19 @@ T Queue<T>::pop()
   return value;
 }
 
-template<class T>
+template<typename T>
 void Queue<T>::clear()
 {
   start_ = end_ = is_full_ = 0;
 }
 
-template<class T>
+template<typename T>
 bool Queue<T>::isFull() const
 {
   return is_full_;
 }
 
-template<class T>
+template<typename T>
 bool Queue<T>::isEmpty() const
 {
   return start_ == end_ && !is_full_;

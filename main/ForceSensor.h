@@ -33,7 +33,7 @@ class ForceSensor : public DisplayedElement
     // Zmienne przechowujące aktualne informacje o sile nacisku
     bool is_overloaded_{ false };
     int force_{ 0 };
-    int force_offset_{ 0 };
+    int force_offset_{ START_OFFSET };
     // Kolejka przechowująca pomiary siły nacisku
     Queue<int> force_measurements_{ FORCE_ESTIMATION_PERIOD / CYCLE_PERIOD };
     // Numer pinu przypisanego do czujnika
@@ -58,7 +58,7 @@ void ForceSensor::executeCommands(const bool buttons[])
 void ForceSensor::getDataToDisplay(String& first_line, String& second_line) const
 {
   first_line = F("Force:       N  ");
-  String str_force(force_ - force_offset_);
+  String str_force = force_ < 10 + START_OFFSET ? F("<10") : String(force_ - force_offset_);
   for (unsigned int i = 0; i < str_force.length(); ++i)
     first_line.setCharAt(11 - i, str_force.charAt(str_force.length() - 1 - i));
 
@@ -77,7 +77,7 @@ void ForceSensor::run()
 
   float signal_value = force_measurements_.mean_value();    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
-  if (signal_value > FORCE_SIGNAL_HIGHER_LIMIT)    // sprawdzenie poprawności sygnału
+  if (ENABLE_ERRORS && signal_value > FORCE_SIGNAL_HIGHER_LIMIT)    // sprawdzenie poprawności sygnału
     reportError(F("2"));
 
   force_ = tabularConversion<const int, const int>(SIGNAL_VALUES_, FORCE_VALUES_, signal_value);    // konwersja poziomów ADC na Newtony
