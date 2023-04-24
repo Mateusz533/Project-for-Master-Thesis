@@ -1,5 +1,6 @@
-#include "StaticArray.h"
 #pragma once
+
+#include "StaticArray.h"
 
 // Klasa szblonowa implementująca kolejkę o ograniczonej długości
 template<typename T>

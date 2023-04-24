@@ -1,5 +1,6 @@
-#include "configuration.h"
 #pragma once
+
+#include "configuration.h"
 
 // Klasa abstrakcyjna, nadrzędna dla każdego elementu działającego jako osobny wątek
 class SystemElement
@@ -15,7 +16,3 @@ class SystemElement
     static int ambient_temperature;    // temperatura otoczenia [*C]
     static int max_heating_power;      // maksymalna moc grzania jednej płyty [W]
 };
-
-// Ustawienie domyślnych wartości temperatury otoczenia oraz maksymalnej mocy grznia
-int SystemElement::ambient_temperature = DEFAULT_AMBIENT_TEMPERATURE;
-int SystemElement::max_heating_power = MAX_HEATING_POWER;

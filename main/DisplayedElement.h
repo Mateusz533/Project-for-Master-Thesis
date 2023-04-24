@@ -1,5 +1,6 @@
-#include "SystemElement.h"
 #pragma once
+
+#include "SystemElement.h"
 
 // Klasa abstrakcyjna, nadrzędna dla elementów posiadających informacje do wyświetlenia na ekranie
 class DisplayedElement : public SystemElement

@@ -4,10 +4,13 @@
 #include "HeatingPlate.h"
 #include "SettingsController.h"
 #include "reportError.h"
-#include "StaticArray.h"
 
 // Utworzenie systemu zarządzającego wszystkimi funkcjami urządzenia (4 główne wątki)
 HeatingPress device(4);
+
+// Ustawienie domyślnych wartości temperatury otoczenia oraz maksymalnej mocy grzania
+int SystemElement::ambient_temperature = DEFAULT_AMBIENT_TEMPERATURE;
+int SystemElement::max_heating_power = MAX_HEATING_POWER;
 
 void setup()
 {

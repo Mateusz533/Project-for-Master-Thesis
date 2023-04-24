@@ -1,5 +1,6 @@
-#include "StaticArray.h"
 #pragma once
+
+#include "StaticArray.h"
 
 // Funkcja konwertująca podany argument wg. funkcji podanej tabelarycznie z interpolacją liniową
 template<typename A, typename V>
