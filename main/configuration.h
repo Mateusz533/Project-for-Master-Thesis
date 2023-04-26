@@ -80,7 +80,7 @@
 #define LCD_ROWS_NUMBER 2
 
 // Parametry przycisków
-#define CONTINUOUS_PRESSING_ACTIVATION_TIME 1000
+#define CONTINUOUS_PRESSING_ACTIVATION_TIME 900
 #define BUTTONS_NUMBER 5
 
 // Enumerator dla przycisków

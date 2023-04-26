@@ -1,8 +1,8 @@
 #include "HeatingPlate.h"
 
 HeatingPlate::HeatingPlate(short unsigned int pin_temperature_sensor, short unsigned int pin_heat_supply, float tuning_factor, float sensor_offset, const String& name) :
-  Heater{ pin_heat_supply },
   temperature_sensor{ pin_temperature_sensor, tuning_factor, sensor_offset },
+  regulator{ pin_heat_supply },
   DISPLAYED_NAME_{ name }
 {
   // przypisanie numerów pinów w mikrosterowniku
@@ -10,7 +10,7 @@ HeatingPlate::HeatingPlate(short unsigned int pin_temperature_sensor, short unsi
 
 void HeatingPlate::init()
 {
-  Heater::init();               // konfiguracja grzałki
+  regulator.init();             // konfiguracja grzałki
   temperature_sensor.init();    // konfiguracja czujnika temperatury
 }
 
@@ -19,14 +19,12 @@ void HeatingPlate::executeCommands(const bool buttons[])
   if (buttons[UP] && !buttons[DOWN] && set_temperature_ < MAX_TEMPERATURE)
   {
     set_temperature_ += PRESET_TEMPERATURE_RESOLUTION;
-    active_regulation_ = false;
-    prediction_error_ = 0;
+    regulator.reset();
   }
   else if (!buttons[UP] && buttons[DOWN] && set_temperature_ > MIN_TEMPERATURE)
   {
     set_temperature_ -= PRESET_TEMPERATURE_RESOLUTION;
-    active_regulation_ = false;
-    prediction_error_ = 0;
+    regulator.reset();
   }
   if (buttons[ACTION])
     is_heating_set_ = !is_heating_set_;
@@ -48,8 +46,8 @@ void HeatingPlate::getDataToDisplay(String& first_line, String& second_line) con
 
 void HeatingPlate::run()
 {
-  // Włączenie/wyłączenie grzania - musi następować szybciej niż odświeżanie stanu temperatury
-  manageHeating();
+  // Ustawianie odpowiedniego sygnału grzania
+  regulator.run();
 
   // Pomiar temperatury na płycie
   temperature_sensor.measureTemperature();
@@ -65,6 +63,6 @@ void HeatingPlate::run()
 
     real_temperature_ = estimated_temperature;
     temperature_sensor.clearBuffer();
-    regulateHeatingPower();
+    regulator.refreshHeatingPower(set_temperature_, real_temperature_, is_heating_set_);
   }
 }

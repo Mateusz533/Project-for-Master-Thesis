@@ -4,13 +4,13 @@
 #include "configuration.h"
 #include "DisplayedElement.h"
 #include "TemperatureSensor.h"
-#include "Heater.h"
+#include "HeatingRegulator.h"
 #include "StaticArray.h"
 #include "tabularConversion.h"
 #include "reportError.h"
 
 // Klasa przechowująca parametry płyty grzewczej
-class HeatingPlate : public DisplayedElement, public Heater
+class HeatingPlate : public DisplayedElement
 {
   public:
     HeatingPlate() = delete;
@@ -29,6 +29,11 @@ class HeatingPlate : public DisplayedElement, public Heater
   private:
     // Instatncja czujnika temperatury
     TemperatureSensor temperature_sensor{ 0, 1.0, 0.0 };
+    HeatingRegulator regulator{ 1 };
+    // Zmienne przechowujące zadane wartości grzania
+    bool is_heating_set_{ false };
+    int set_temperature_{ 200 };
+    float real_temperature_{ ambient_temperature };
     // Wyświetlana nazwa grzałki
     const String DISPLAYED_NAME_;
 };
