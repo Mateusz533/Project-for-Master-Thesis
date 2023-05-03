@@ -8,12 +8,11 @@ class Heater
 {
   public:
     Heater() = delete;
-    // Konstruktor
     Heater(short unsigned int pin_heat_supply);
     ~Heater() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
-    // Zmienia ustawioną wartość mocy grzania podczas każdego cyklu umożliwiając jej sprzętową interpolację do wartości zadanej
+    // Zmienia ustawiony sygnał mocy grzania podczas każdego cyklu umożliwiając jej sprzętową interpolację do wartości zadanej
     void run();
     // Ustawia wprowadzoną moc grzania [W]
     void setHeatingPower(const float new_heating_power);
@@ -21,7 +20,7 @@ class Heater
     float getHeatingPower() const;
 
   private:
-    // Zmienna przechowująca zadaną wartość grzania
+    // Zadana wartość grzania
     float heating_power_{ 0 };
     unsigned int power_switching_counter_{ 0 };
     // Numer pinu przypisanego do grzałki

@@ -8,7 +8,6 @@
 class SettingsController : public DisplayedElement
 {
   public:
-    // Konstruktor
     SettingsController();
     ~SettingsController() = default;
     // Nie wykonuje żadnej akcji
@@ -21,9 +20,11 @@ class SettingsController : public DisplayedElement
     void getDataToDisplay(String& first_line, String& second_line) const override;
 
   private:
+    // Położenie obecnie ustawianego parametru
+    short unsigned int current_line_{ 0 };
+    // Ograniczenia ustawianych parametrów
     const int AMBIENT_TEMPERATURE_RESOLUTION_{ 1 };
     const int MIN_AMBIENT_TEMPERATURE_{ -50 };
     const int MAX_AMBIENT_TEMPERATURE_{ 100 };
     const int MAX_HEATING_POWER_RESOLUTION_{ 5 };
-    short unsigned int current_line_{ 0 };
 };

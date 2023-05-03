@@ -23,7 +23,7 @@ void ForceSensor::executeCommands(const bool buttons[])
 void ForceSensor::getDataToDisplay(String& first_line, String& second_line) const
 {
   first_line = F("Force:       N  ");
-  String str_force = force_ < 10 + START_OFFSET ? F("<10") : String(force_ - force_offset_);
+  String str_force = force_ <= force_offset_ ? String(F("<")) + String(force_offset_ + TARE) : String(force_ + TARE);
   for (unsigned int i = 0; i < str_force.length(); ++i)
     first_line.setCharAt(11 - i, str_force.charAt(str_force.length() - 1 - i));
 

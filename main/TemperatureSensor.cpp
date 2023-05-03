@@ -47,11 +47,11 @@ float TemperatureSensor::calculateRelativeTemperature()
     }
   }
 
-  // Cyfrowa filtracja szumów poprzez filtr medianowy
+  // Sprawdzenie poziomu zaszumienia sygnału
   if (ENABLE_ERRORS && higher_index < lower_index + long_term_measurements_.length() / 2.0)
     reportError(F("3"));
 
-  // Przeskalowanie sygnału do początkowego zakresu
+  // Filtracja medianowa oraz przeskalowanie sygnału do początkowego zakresu
   float signal_value = long_term_measurements_.quantile(0.5, lower_index, higher_index) / 8.0;
 
   // Korekta ustawionych mechanicznie wzmocnień wzmacniaczy sygnałów temperatury

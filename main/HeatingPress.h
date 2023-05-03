@@ -12,13 +12,11 @@ class HeatingPress
 {
   public:
     HeatingPress() = delete;
-    // Konstruktor
     HeatingPress(short unsigned int allocated_threads_number = 4);
-    // Destruktor
     ~HeatingPress();
     // Dodaje podany element do systemu jako nowy wątek
     void addThread(SystemElement* new_thread, unsigned int period);
-    // Dodaje podany element do systemu jako nowy wątek wraz oknem interfejsu użytkownika
+    // Dodaje podany element do systemu jako nowy wątek wraz z oknem interfejsu użytkownika
     void addWindow(DisplayedElement* new_thread, unsigned int period);
     // Inicjalizuje urządzenie konfigurując wszystkie porty, ekran, liczniki oraz wyświetlając wprowadzenie
     void init();
@@ -31,7 +29,6 @@ class HeatingPress
     // Struktura przechowująca parametry jednego wątku
     struct Thread
     {
-        // Konstruktor domyślny
         Thread() = default;
         Thread(SystemElement* task, unsigned int counter, unsigned int overflow) :
           task{ task },
@@ -41,9 +38,9 @@ class HeatingPress
           // Przypisanie wszystkich pól struktury
         }
         ~Thread() = default;
-        // Wskaźnik do instancji danego wątku
+        // Wskaźnik do instancji obsługiwanej przez dany wątku
         SystemElement* task{ nullptr };
-        // Liczniki umożliwiające wykonywanie zadań z odpowiednimi częstotliwościami
+        // Licznik umożliwiający wykonywanie zadania z odpowiednią częstotliwością
         unsigned int counter{ 0 };
         unsigned int overflow{ 1 };
     };
@@ -55,9 +52,9 @@ class HeatingPress
 
     // Obiekt obsługujący interfejs wejściowy składający się z 5-ciu przycisków
     InputInterface input_interface_;
-    // Tablica przechowujaca instancję każdego z wątków
+    // Tablica przechowujaca wszystkie wątki
     Thread* threads_{ nullptr };
-    // Tablica przechowujaca wskaźnik do instancji każdego z okien
+    // Tablica przechowujaca wskaźnik do każdego z okien
     DisplayedElement** windows_{ nullptr };
     // Obiekt obsługujący interfejs wyjściowy składający się z ekranu LCD o 2-ch wierszach i 16-stu kolumnach
     OutputInterface output_interface_;

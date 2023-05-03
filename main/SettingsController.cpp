@@ -2,7 +2,7 @@
 
 SettingsController::SettingsController()
 {
-  // przypisanie domyślnych wartości temperatury otoczenia oraz maksymalnej mocy grznia
+  // Przypisanie domyślnych wartości temperatury otoczenia oraz maksymalnej mocy grznia
   ambient_temperature = DEFAULT_AMBIENT_TEMPERATURE;
   max_heating_power = MAX_HEATING_POWER / 2;
 }

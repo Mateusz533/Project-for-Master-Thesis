@@ -7,9 +7,7 @@
 class InputInterface : public SystemElement
 {
   public:
-    // Konstruktor
     InputInterface();
-    // Destruktor
     ~InputInterface();
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init() override;

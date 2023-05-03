@@ -32,10 +32,10 @@ void HeatingPress::addThread(SystemElement* new_thread, unsigned int period)
 {
   if (threads_number_ == allocated_threads_number_)
   {
-    Thread* temp_table = new Thread[2 * allocated_threads_number_];
+    Thread* temp_table = new Thread[allocated_threads_number_ + 1];
     for (unsigned int i = 0; i < allocated_threads_number_; ++i)
       temp_table[i] = threads_[i];
-    allocated_threads_number_ *= 2;
+    ++allocated_threads_number_;
     delete[] threads_;
     threads_ = temp_table;
   }
@@ -47,10 +47,10 @@ void HeatingPress::addWindow(DisplayedElement* new_window, unsigned int period)
   addThread(new_window, period);
   if (windows_number_ == allocated_windows_number_)
   {
-    DisplayedElement** temp_table = new DisplayedElement*[2 * allocated_windows_number_];
+    DisplayedElement** temp_table = new DisplayedElement*[allocated_windows_number_ + 1];
     for (unsigned int i = 0; i < allocated_windows_number_; ++i)
       temp_table[i] = windows_[i];
-    allocated_windows_number_ *= 2;
+    ++allocated_windows_number_;
     delete[] windows_;
     windows_ = temp_table;
   }

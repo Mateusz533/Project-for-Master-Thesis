@@ -7,7 +7,6 @@ class PushButton
 {
   public:
     PushButton() = delete;
-    // Konstruktor
     PushButton(short unsigned int pin);
     ~PushButton() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
@@ -24,10 +23,11 @@ class PushButton
     void reset();
 
   private:
-    // Zmienne przechowujące ostatnie stany przycisku
+    // Zmienne przechowujące stan przycisku
     bool currently_pressed_{ false };
     bool previously_pressed_{ false };
-    unsigned int time_of_continuous_pressing_{ 0 };    // czas ciągłego wciśnęcia mierzony liczbą cykli
+    // Czas ciągłego wciśnęcia mierzony liczbą cykli
+    unsigned int time_of_continuous_pressing_{ 0 };    
     // Numer pinu przypisany do przycisku
     const short unsigned int PIN_{ 0 };
 };

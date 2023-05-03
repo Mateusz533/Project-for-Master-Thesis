@@ -11,7 +11,6 @@ class TemperatureSensor
 {
   public:
     TemperatureSensor() = delete;
-    // Konstruktor
     TemperatureSensor(short unsigned int pin_temperature_sensor, float tuning_factor, float sensor_offset);
     ~TemperatureSensor() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
@@ -26,7 +25,7 @@ class TemperatureSensor
     void clearBuffer();
 
   private:
-    // Zmienne przechowujące aktualne wartości temperatury
+    // Zmienne przechowujące pomiary sygnału temperatury
     Queue<unsigned int> long_term_measurements_{ TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD };
     Queue<unsigned int> short_term_measurements_{ TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD };
     // Numer pinu przypisanego do czujnika

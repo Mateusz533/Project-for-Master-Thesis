@@ -31,7 +31,8 @@
 #define MAX_TEMPERATURE_GROWTH 15.0            // [*C/s]
 
 // Parametry czujnika nacisku
-#define START_OFFSET -5    // [N]
+#define TARE 5            // [N]
+#define START_OFFSET 5    //
 
 // Parametry grzania oraz regulacji temperatury
 #define MIN_TEMPERATURE 20                 // [*C]
@@ -80,7 +81,7 @@
 #define LCD_ROWS_NUMBER 2
 
 // Parametry przycisków
-#define CONTINUOUS_PRESSING_ACTIVATION_TIME 900
+#define CONTINUOUS_PRESSING_ACTIVATION_TIME 900    // powinien być wielokrotnością okresu odświeżania przycisków
 #define BUTTONS_NUMBER 5
 
 // Enumerator dla przycisków

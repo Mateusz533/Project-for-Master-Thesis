@@ -14,7 +14,6 @@ class HeatingPlate : public DisplayedElement
 {
   public:
     HeatingPlate() = delete;
-    // Konstruktor
     HeatingPlate(short unsigned int pin_temperature_sensor, short unsigned int pin_heat_supply, float tuning_factor, float sensor_offset, const String& name);
     ~HeatingPlate() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
@@ -29,8 +28,9 @@ class HeatingPlate : public DisplayedElement
   private:
     // Instatncja czujnika temperatury
     TemperatureSensor temperature_sensor{ 0, 1.0, 0.0 };
+    // Instatncja regulatora grzania
     HeatingRegulator regulator{ 1 };
-    // Zmienne przechowujące zadane wartości grzania
+    // Zmienne przechowujące wyświetlane parametry grzania
     bool is_heating_set_{ false };
     int set_temperature_{ 200 };
     float real_temperature_{ ambient_temperature };

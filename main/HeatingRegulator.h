@@ -13,14 +13,13 @@ class HeatingRegulator : public SystemElement
 {
   public:
     HeatingRegulator() = delete;
-    // Konstruktor
     HeatingRegulator(short unsigned int pin_heat_supply);
     ~HeatingRegulator() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init() override;
     // Włącza/wyłącza grzanie w podczas każdego cyklu zgodnie z zadaną wartością
     void run() override;
-    // Ustawia moc grzania potrzebną do osiągnięcia zadanej temperatury lub wyłącza je zależnie od zadanego argumentu
+    // Ustawia moc grzania potrzebną do osiągnięcia zadanej temperatury lub wyłącza je zależnie od wartości argumentu
     void refreshHeatingPower(int set_temperature, float real_temperature, bool is_heating_set);
     // Zeruje wartość skumulowanej odchyłki temperatury oraz zmienne regulacji
     void reset();

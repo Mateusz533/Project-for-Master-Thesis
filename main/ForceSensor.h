@@ -13,7 +13,6 @@ class ForceSensor : public DisplayedElement
 {
   public:
     ForceSensor() = delete;
-    // Konstruktor
     ForceSensor(short unsigned int pin_force_sensor);
     ~ForceSensor() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
