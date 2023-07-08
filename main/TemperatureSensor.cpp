@@ -1,6 +1,7 @@
 #include "TemperatureSensor.h"
 
-TemperatureSensor::TemperatureSensor(short unsigned int pin_temperature_sensor, float tuning_factor, float sensor_offset) :
+TemperatureSensor::TemperatureSensor(
+  const short unsigned int pin_temperature_sensor, const float tuning_factor, const float sensor_offset) :
   PIN_TEMPERATURE_SENSOR_{ pin_temperature_sensor },
   TUNING_FACTOR_{ tuning_factor },
   SENSOR_OFFSET_{ sensor_offset }
@@ -24,7 +25,7 @@ void TemperatureSensor::measureTemperature()
     return;
 
   // Cyfrowa filtracja szumów poprzez filtr medianowy
-  unsigned int median_value = short_term_measurements_.quantile(0.5);
+  const unsigned int median_value = short_term_measurements_.quantile(0.5);
   short_term_measurements_.clear();
 
   long_term_measurements_.push(median_value);
@@ -52,7 +53,7 @@ float TemperatureSensor::calculateRelativeTemperature()
     reportError(F("3"));
 
   // Filtracja medianowa oraz przeskalowanie sygnału do początkowego zakresu
-  float signal_value = long_term_measurements_.quantile(0.5, lower_index, higher_index) / 8.0;
+  const float signal_value = long_term_measurements_.quantile(0.5, lower_index, higher_index) / 8.0;
 
   // Korekta ustawionych mechanicznie wzmocnień wzmacniaczy sygnałów temperatury
   return TUNING_FACTOR_ * (signal_value - SENSOR_OFFSET_);

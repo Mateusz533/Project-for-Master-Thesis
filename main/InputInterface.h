@@ -20,6 +20,6 @@ class InputInterface : public SystemElement
 
   private:
     // Tablica przechowujaca instancję dla każdego z przycisków
-    PushButton* buttons_{ nullptr };
+    PushButton* p_buttons_{ nullptr };
     bool is_ready_{ false };
 };

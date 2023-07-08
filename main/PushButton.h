@@ -7,7 +7,7 @@ class PushButton
 {
   public:
     PushButton() = delete;
-    PushButton(short unsigned int pin);
+    PushButton(const short unsigned int pin);
     ~PushButton() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
@@ -18,7 +18,7 @@ class PushButton
     // Zwraca prawdę dla zbocza opadającego oraz fałsz w przypadku jego braku
     bool isReleased() const;
     // Zwraca prawdę dla wciśniętego przycisku przez żądaną liczbę cykli oraz fałsz w przeciwnym wypadku
-    bool isPressed(unsigned int min_pressing_time) const;
+    bool isPressed(const unsigned int min_pressing_time) const;
     // Zeruje wszystkie zapamiętane stany przycisku
     void reset();
 
@@ -27,7 +27,7 @@ class PushButton
     bool currently_pressed_{ false };
     bool previously_pressed_{ false };
     // Czas ciągłego wciśnęcia mierzony liczbą cykli
-    unsigned int time_of_continuous_pressing_{ 0 };    
+    unsigned int time_of_continuous_pressing_{ 0 };
     // Numer pinu przypisany do przycisku
     const short unsigned int PIN_{ 0 };
 };

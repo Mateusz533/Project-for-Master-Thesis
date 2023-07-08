@@ -1,6 +1,6 @@
 #include "Heater.h"
 
-Heater::Heater(short unsigned int pin_heat_supply) :
+Heater::Heater(const short unsigned int pin_heat_supply) :
   PIN_HEAT_SUPPLY_{ pin_heat_supply }
 {
   // przypisanie numeru pinu w mikrosterowniku
@@ -15,10 +15,10 @@ void Heater::init()
 void Heater::run()
 {
   const unsigned int OVERFLOW = TEMPERATURE_ESTIMATION_PERIOD / CYCLE_PERIOD;
-  float target_heating_signal = heating_power_ / MAX_HEATING_POWER * MAX_HEAT_SIGNAL;
-  short unsigned int lower_heating_signal = floor(target_heating_signal);
-  short unsigned int upper_heating_signal = ceil(target_heating_signal);
-  unsigned int switching_time = round((target_heating_signal - lower_heating_signal) * OVERFLOW);
+  const float target_heating_signal = heating_power_ / MAX_HEATING_POWER * MAX_HEAT_SIGNAL;
+  const short unsigned int lower_heating_signal = floor(target_heating_signal);
+  const short unsigned int upper_heating_signal = ceil(target_heating_signal);
+  const unsigned int switching_time = round((target_heating_signal - lower_heating_signal) * OVERFLOW);
 
   // Przełączenie ustawionej wartości grzania w takim momencie, aby średnia moc odpowiadała jak najdokładniej wartości zadanej
   if (power_switching_counter_ == 0)

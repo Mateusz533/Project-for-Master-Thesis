@@ -1,6 +1,6 @@
 #include "HeatingPress.h"
 
-HeatingPress::HeatingPress(short unsigned int allocated_threads_number)
+HeatingPress::HeatingPress(const short unsigned int allocated_threads_number)
 {
   // Zarezerwowanie pamięci na każdy z wątków oraz okien
   threads_ = new Thread[allocated_threads_number];
@@ -28,7 +28,7 @@ void HeatingPress::init()
   cycle_counter_ = millis() + CYCLE_PERIOD;     // ustawienie wartości licznika czasu
 }
 
-void HeatingPress::addThread(SystemElement* new_thread, unsigned int period)
+void HeatingPress::addThread(SystemElement* new_thread, const unsigned int period)
 {
   if (threads_number_ == allocated_threads_number_)
   {
@@ -42,7 +42,7 @@ void HeatingPress::addThread(SystemElement* new_thread, unsigned int period)
   threads_[threads_number_++] = Thread(new_thread, 0, period / CYCLE_PERIOD);
 }
 
-void HeatingPress::addWindow(DisplayedElement* new_window, unsigned int period)
+void HeatingPress::addWindow(DisplayedElement* new_window, const unsigned int period)
 {
   addThread(new_window, period);
   if (windows_number_ == allocated_windows_number_)
@@ -59,20 +59,20 @@ void HeatingPress::addWindow(DisplayedElement* new_window, unsigned int period)
 
 void HeatingPress::readUserCommands()
 {
-  bool* buttons_activity = input_interface_.getButtonsActivity();
-  if (!buttons_activity)
+  const bool* const p_buttons_activity = input_interface_.getButtonsActivity();
+  if (!p_buttons_activity)
     return;
 
   if (!input_interface_.isWindowChanged())
   {
-    windows_[displayed_window_id_]->executeCommands(buttons_activity);
+    windows_[displayed_window_id_]->executeCommands(p_buttons_activity);
     sendDataToDisplay();
     return;
   }
 
-  if (buttons_activity[LEFT])
+  if (p_buttons_activity[LEFT])
     displayed_window_id_ += windows_number_ - 1;    // przełączenie wyświetlanego okna
-  if (buttons_activity[RIGHT])
+  if (p_buttons_activity[RIGHT])
     ++displayed_window_id_;
 
   displayed_window_id_ %= windows_number_;
@@ -89,7 +89,7 @@ void HeatingPress::sendDataToDisplay(const bool force_refresh)
 void HeatingPress::run()
 {
   // Wykonywanie programu z określoną częstotliwością
-  long unsigned int timer = millis();
+  const long unsigned int timer = millis();
   if (ENABLE_ERRORS && cycle_counter_ > timer + CYCLE_PERIOD)
     reportError(F("0"));
   if (cycle_counter_ > timer)

@@ -13,7 +13,7 @@ class ForceSensor : public DisplayedElement
 {
   public:
     ForceSensor() = delete;
-    ForceSensor(short unsigned int pin_force_sensor);
+    ForceSensor(const short unsigned int pin_force_sensor);
     ~ForceSensor() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init() override;

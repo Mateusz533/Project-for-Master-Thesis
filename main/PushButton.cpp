@@ -1,6 +1,6 @@
 #include "PushButton.h"
 
-PushButton::PushButton(short unsigned int pin) :
+PushButton::PushButton(const short unsigned int pin) :
   PIN_{ pin }
 {
   // przypisanie numeru pinu w mikrosterowniku
@@ -32,7 +32,7 @@ bool PushButton::isReleased() const
   return !currently_pressed_ && previously_pressed_;    // stan aktywowany zboczem opadającym
 }
 
-bool PushButton::isPressed(unsigned int min_pressing_time) const
+bool PushButton::isPressed(const unsigned int min_pressing_time) const
 {
   return time_of_continuous_pressing_ >= min_pressing_time;    // stan aktywowany trwającym naciśnięciem
 }

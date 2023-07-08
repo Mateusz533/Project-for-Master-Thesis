@@ -22,13 +22,13 @@ class HardwareTester : public SystemElement
     // Przekazuje przez port szeregowy surowe dane o mierzonym sygnale temperatury
     void testTemperatureSensors();
     // Odczytuje sygnał z wyjścia wzmacniacza napięcia (w poziomach ADC)
-    void testAmplifier(short unsigned int pin_output);
+    void testAmplifier(const short unsigned int pin_output);
     // Przekazuje przez port szeregowy dane potrzebne do wyznaczenia charakterystyki cieplnej urządzenia
     void testHeaters();
     // Przekazuje przez port szeregowy dane o mierzonej sile nacisku w zależności od temperatury
     void testForceSensorThermalEffect();
     // Przekazuje dane o różnicy czasu w danej chwili od podanej wartości
-    void testTimeSynchronization(long unsigned int timer);
+    void testTimeSynchronization(const long unsigned int timer);
     // Przekazuje informacje zarówno o pomiarze temperatury jak i siły nacisku
     void testAll();
 

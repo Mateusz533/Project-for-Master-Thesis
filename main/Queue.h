@@ -9,7 +9,7 @@ class Queue : public StaticArray<T>
   public:
     Queue() = delete;
     // Konstruktor pobierający długość kolejki
-    Queue(unsigned int length) :
+    Queue(const unsigned int length) :
       StaticArray<T>{ length }
     {
       // inicjalizacja pustej kolejki

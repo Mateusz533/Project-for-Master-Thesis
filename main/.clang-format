@@ -59,7 +59,7 @@ BreakConstructorInitializers: AfterColon
 BreakConstructorInitializersBeforeComma: false
 BreakInheritanceList: BeforeColon
 BreakStringLiterals: false
-ColumnLimit: 160
+ColumnLimit: 120
 CommentPragmas: ''
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false

@@ -11,7 +11,7 @@ class TemperatureSensor
 {
   public:
     TemperatureSensor() = delete;
-    TemperatureSensor(short unsigned int pin_temperature_sensor, float tuning_factor, float sensor_offset);
+    TemperatureSensor(const short unsigned int pin_temperature_sensor, const float tuning_factor, const float sensor_offset);
     ~TemperatureSensor() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();

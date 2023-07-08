@@ -7,14 +7,14 @@ class StaticArray
   public:
     StaticArray() = delete;
     // Konstruktor pobierający długość tablicy
-    StaticArray(unsigned int length) :
+    StaticArray(const unsigned int length) :
       LENGTH_{ length },
       value_{ new T[length] }
     {
       // ustawienie stałej wielkości tablicy i stałego jej adresu
     }
     // Konstruktor pobierający tablicę wraz z jej długością
-    StaticArray(unsigned int length, T* array) :
+    StaticArray(const unsigned int length, T* array) :
       LENGTH_{ length },
       value_{ array }
     {
@@ -29,7 +29,7 @@ class StaticArray
         value_[i] = right.value_[i];
     }
     // Umożliwienie zapisu i odczytu jak ze zwykłej tablicy
-    T& operator[](unsigned int index)
+    T& operator[](const unsigned int index)
     {
       return value_[index % LENGTH_];
     }
@@ -41,7 +41,7 @@ class StaticArray
     // Zwraca długość tablicy
     unsigned int length() const;
     // Pobiera element o zadanym indeksie
-    T get(unsigned int index) const;
+    T get(const unsigned int index) const;
     // Sortowanie tablic przez wstawianie
     void sort();
     // Zwraca minimalną wartość z podanego przedziału tablicy
@@ -51,7 +51,7 @@ class StaticArray
     // Zwraca średnią z podanego przedziału wartości tablicy
     T mean_value(unsigned int start = 0, unsigned int end = -1) const;
     // Zwraca kwantyl o określonym poziomie z podanego przedziału wartości z tablicy
-    T quantile(float quantile_level, unsigned int start = 0, unsigned int end = -1);
+    T quantile(const float quantile_level, unsigned int start = 0, unsigned int end = -1);
 
   private:
     const unsigned int LENGTH_{ 0 };
@@ -65,7 +65,7 @@ unsigned int StaticArray<T>::length() const
 }
 
 template<typename T>
-T StaticArray<T>::get(unsigned int index) const
+T StaticArray<T>::get(const unsigned int index) const
 {
   return value_[index];
 }
@@ -80,7 +80,7 @@ void StaticArray<T>::sort()
       if (value_[j - 1] <= value_[j])
         break;
 
-      unsigned int aux_var = value_[j];
+      const unsigned int aux_var = value_[j];
       value_[j] = value_[j - 1];
       value_[j - 1] = aux_var;
     }
@@ -124,13 +124,13 @@ T StaticArray<T>::mean_value(unsigned int start, unsigned int end) const
 }
 
 template<typename T>
-T StaticArray<T>::quantile(float quantile_level, unsigned int start, unsigned int end)
+T StaticArray<T>::quantile(const float quantile_level, unsigned int start, unsigned int end)
 {
   end = end < LENGTH_ ? end : LENGTH_;
   sort();
-  float quantile_position = quantile_level * (end - start - 1);
-  unsigned int lower_index = start + floor(quantile_position);
-  unsigned int higher_index = start + ceil(quantile_position);
+  const float quantile_position = quantile_level * (end - start - 1);
+  const unsigned int lower_index = start + floor(quantile_position);
+  const unsigned int higher_index = start + ceil(quantile_position);
   float quantile = 0;
   if (lower_index == higher_index)
     quantile = value_[lower_index];

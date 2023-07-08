@@ -12,12 +12,12 @@ class HeatingPress
 {
   public:
     HeatingPress() = delete;
-    HeatingPress(short unsigned int allocated_threads_number = 4);
+    HeatingPress(const short unsigned int allocated_threads_number = 6);
     ~HeatingPress();
     // Dodaje podany element do systemu jako nowy wątek
-    void addThread(SystemElement* new_thread, unsigned int period);
+    void addThread(SystemElement* new_thread, const unsigned int period);
     // Dodaje podany element do systemu jako nowy wątek wraz z oknem interfejsu użytkownika
-    void addWindow(DisplayedElement* new_thread, unsigned int period);
+    void addWindow(DisplayedElement* new_thread, const unsigned int period);
     // Inicjalizuje urządzenie konfigurując wszystkie porty, ekran, liczniki oraz wyświetlając wprowadzenie
     void init();
     // Wykonuje jeden cykl działania systemu w przypadku nadejścia odpowiadającego mu czasu
@@ -30,7 +30,7 @@ class HeatingPress
     struct Thread
     {
         Thread() = default;
-        Thread(SystemElement* task, unsigned int counter, unsigned int overflow) :
+        Thread(SystemElement* task, const unsigned int counter, const unsigned int overflow) :
           task{ task },
           counter{ counter },
           overflow{ overflow }

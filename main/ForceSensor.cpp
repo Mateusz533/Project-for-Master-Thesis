@@ -1,6 +1,6 @@
 #include "ForceSensor.h"
 
-ForceSensor::ForceSensor(short unsigned int pin_force_sensor) :
+ForceSensor::ForceSensor(const short unsigned int pin_force_sensor) :
   PIN_FORCE_SENSOR_{ pin_force_sensor },
   SIGNAL_VALUES_{ FORCE_CONVERSION_ARRAY_SIZE, new const int[FORCE_CONVERSION_ARRAY_SIZE] FORCE_SIGNAL_VALUES },
   FORCE_VALUES_{ FORCE_CONVERSION_ARRAY_SIZE, new const int[FORCE_CONVERSION_ARRAY_SIZE] FORCE_VALUES }
@@ -40,7 +40,7 @@ void ForceSensor::run()
   if (!force_measurements_.isFull())
     return;
 
-  float signal_value = force_measurements_.mean_value();    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
+  const float signal_value = force_measurements_.mean_value();    // filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
 
   if (ENABLE_ERRORS && signal_value > FORCE_SIGNAL_HIGHER_LIMIT)    // sprawdzenie poprawności sygnału
     reportError(F("2"));
