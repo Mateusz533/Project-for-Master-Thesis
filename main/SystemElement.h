@@ -13,6 +13,6 @@ class SystemElement
     virtual void run() = 0;
 
   protected:
-    static int s_ambient_temperature;    // temperatura otoczenia [*C]
-    static int s_max_heating_power;      // maksymalna moc grzania jednej płyty [W]
+    static DegCelsius s_ambient_temperature;    // temperatura otoczenia [*C]
+    static StorageWatt s_max_heating_power;        // maksymalna moc grzania jednej płyty [W]
 };

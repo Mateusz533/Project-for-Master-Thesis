@@ -1,74 +1,69 @@
 #pragma once
 
-#include "StaticArray.h"
+#include "NumericArray.h"
 
 // Klasa szblonowa implementująca kolejkę o ograniczonej długości
-template<typename T>
-class Queue : public StaticArray<T>
+template<typename T, CollectionSize N>
+class Queue : public NumericArray<T, N>
 {
   public:
-    Queue() = delete;
-    // Konstruktor pobierający długość kolejki
-    Queue(const unsigned int length) :
-      StaticArray<T>{ length }
-    {
-      // inicjalizacja pustej kolejki
-    }
-    ~Queue() = default;
+    inline Queue() = default;
+    Queue(const Queue<T, N>& right) = delete;
+    inline ~Queue() = default;
     // Dodaje nową wartość na koniec kolejki
-    void push(const T new_value);
+    inline void push(const T new_value);
     // Pobiera wartość z początku kolejki
-    T pop();
+    inline T pop();
     // Usuwa wszystkie elementy z kolejki
-    void clear();
+    inline void clear();
     // Zwraca prawdę, jeśli kolejka jest pusta
-    bool isFull() const;
+    inline bool isFull() const;
     // Zwraca fałsz, jeśli kolejka jest pełna
-    bool isEmpty() const;
+    inline bool isEmpty() const;
 
   private:
-    unsigned int start_{ 0 };
-    unsigned int end_{ 0 };
+    CollectionSize start_{ 0 };
+    CollectionSize end_{ 0 };
     bool is_full_{ 0 };
 };
 
-template<typename T>
-void Queue<T>::push(T new_value)
+template<typename T, CollectionSize N>
+inline void Queue<T, N>::push(const T new_value)
 {
   (*this)[end_++] = new_value;
-  end_ %= this->length();
+  end_ %= N;
   if (is_full_)
     start_ = end_;
   else if (start_ == end_)
     is_full_ = true;
 }
 
-template<typename T>
-T Queue<T>::pop()
+template<typename T, CollectionSize N>
+inline T Queue<T, N>::pop()
 {
-  T value = this[start_];
+  const T value{ this[start_] };
   if (isEmpty())
     return value;
 
   is_full_ = false;
-  start_ = ++start_ % this->length();
+  start_ = ++start_ % N;
   return value;
 }
 
-template<typename T>
-void Queue<T>::clear()
+template<typename T, CollectionSize N>
+inline void Queue<T, N>::clear()
 {
   start_ = end_ = is_full_ = 0;
 }
 
-template<typename T>
-bool Queue<T>::isFull() const
+template<typename T, CollectionSize N>
+inline bool Queue<T, N>::isFull() const
 {
   return is_full_;
 }
 
-template<typename T>
-bool Queue<T>::isEmpty() const
+template<typename T, CollectionSize N>
+inline bool Queue<T, N>::isEmpty() const
 {
   return start_ == end_ && !is_full_;
 }

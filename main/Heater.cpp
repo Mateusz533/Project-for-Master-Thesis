@@ -1,6 +1,6 @@
 #include "Heater.h"
 
-Heater::Heater(const short unsigned int pin_heat_supply) :
+Heater::Heater(const uint8_t pin_heat_supply) :
   PIN_HEAT_SUPPLY_{ pin_heat_supply }
 {
   // przypisanie numeru pinu w mikrosterowniku
@@ -14,28 +14,33 @@ void Heater::init()
 
 void Heater::run()
 {
-  const unsigned int OVERFLOW = TEMPERATURE_ESTIMATION_PERIOD / CYCLE_PERIOD;
-  const float target_heating_signal = heating_power_ / MAX_HEATING_POWER * MAX_HEAT_SIGNAL;
-  const short unsigned int lower_heating_signal = floor(target_heating_signal);
-  const short unsigned int upper_heating_signal = ceil(target_heating_signal);
+  constexpr unsigned int OVERFLOW = TEMPERATURE_ESTIMATION_PERIOD / CYCLE_PERIOD;
+  const float target_heating_signal{ heating_power_ / MAX_HEATING_POWER * MAX_HEAT_SIGNAL };
+  const SignlalPWM lower_heating_signal{ static_cast<SignlalPWM>(floor(target_heating_signal)) };
+  const SignlalPWM upper_heating_signal{ static_cast<SignlalPWM>(ceil(target_heating_signal)) };
   const unsigned int switching_time = round((target_heating_signal - lower_heating_signal) * OVERFLOW);
 
   // Przełączenie ustawionej wartości grzania w takim momencie, aby średnia moc odpowiadała jak najdokładniej wartości zadanej
   if (power_switching_counter_ == 0)
-    analogWrite(PIN_HEAT_SUPPLY_, MAX_HEAT_SIGNAL - lower_heating_signal);    // przekaźnik wyzwalany stanem niskim
+    setPowerModulation(lower_heating_signal);
   else if (power_switching_counter_ == switching_time)
-    analogWrite(PIN_HEAT_SUPPLY_, MAX_HEAT_SIGNAL - upper_heating_signal);
+    setPowerModulation(upper_heating_signal);
 
   ++power_switching_counter_;
   power_switching_counter_ %= OVERFLOW;
 }
 
-void Heater::setHeatingPower(const float new_heating_power)
+void Heater::setHeatingPower(const Watt new_heating_power)
 {
   heating_power_ = constrain(new_heating_power, 0, MAX_HEATING_POWER);
 }
 
-float Heater::getHeatingPower() const
+Watt Heater::getHeatingPower() const
 {
   return heating_power_;
+}
+
+inline void Heater::setPowerModulation(const SignlalPWM heating_signal)
+{
+  analogWrite(PIN_HEAT_SUPPLY_, MAX_HEAT_SIGNAL - heating_signal);    // przekaźnik wyzwalany stanem niskim
 }

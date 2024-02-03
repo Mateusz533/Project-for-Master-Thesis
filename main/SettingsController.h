@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Arduino.h>
 #include "configuration.h"
 #include "DisplayedElement.h"
 
@@ -15,16 +14,16 @@ class SettingsController : public DisplayedElement
     // Nie wykonuje żadnej akcji
     void run() override;
     // Wykonuje pobrane od użytkownika polecania dotyczące parametrów globalnych
-    void executeCommands(const bool buttons[]) override;
+    void executeCommands(const Array<bool, BUTTONS_NUMBER>& buttons) override;
     // Wyświetla dane dotyczące parametrów globalnych
-    void getDataToDisplay(String& first_line, String& second_line) const override;
+    ScreenContent getDataToDisplay() const override;
 
   private:
     // Położenie obecnie ustawianego parametru
-    short unsigned int current_line_{ 0 };
+    BasicSize current_line_{ 0 };
     // Ograniczenia ustawianych parametrów
-    const int AMBIENT_TEMPERATURE_RESOLUTION_{ 1 };
-    const int MIN_AMBIENT_TEMPERATURE_{ -50 };
-    const int MAX_AMBIENT_TEMPERATURE_{ 100 };
-    const int MAX_HEATING_POWER_RESOLUTION_{ 5 };
+    static constexpr DegCelsius AMBIENT_TEMPERATURE_RESOLUTION_{ 1 };
+    static constexpr DegCelsius MIN_AMBIENT_TEMPERATURE_{ -50 };
+    static constexpr DegCelsius MAX_AMBIENT_TEMPERATURE_{ 100 };
+    static constexpr StorageWatt MAX_HEATING_POWER_RESOLUTION_{ 5 };
 };

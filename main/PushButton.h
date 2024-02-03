@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Arduino.h>
+#include "configuration.h"
 
 // Klasa przechowująca parametry przycisku
 class PushButton
 {
   public:
-    PushButton() = delete;
-    PushButton(const short unsigned int pin);
+    PushButton() = default;
+    PushButton(const uint8_t pin);
     ~PushButton() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
@@ -29,5 +29,5 @@ class PushButton
     // Czas ciągłego wciśnęcia mierzony liczbą cykli
     unsigned int time_of_continuous_pressing_{ 0 };
     // Numer pinu przypisany do przycisku
-    const short unsigned int PIN_{ 0 };
+    uint8_t pin_{ PIN_SAFETY_MOCK_INPUT };
 };

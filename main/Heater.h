@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Arduino.h>
 #include "configuration.h"
 
 // Klasa przechowująca parametry grzałki
@@ -8,7 +7,7 @@ class Heater
 {
   public:
     Heater() = delete;
-    Heater(const short unsigned int pin_heat_supply);
+    Heater(const uint8_t pin_heat_supply);
     ~Heater() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
@@ -16,14 +15,17 @@ class Heater
     // umożliwiając jej sprzętową interpolację do wartości zadanej
     void run();
     // Ustawia wprowadzoną moc grzania [W]
-    void setHeatingPower(const float new_heating_power);
+    void setHeatingPower(const Watt new_heating_power);
     // Zwraca aktualną moc grzania [W]
-    float getHeatingPower() const;
+    Watt getHeatingPower() const;
 
   private:
+    // Ustawia zmodulowany synał mocy z podanym wypełnieniem impulsu
+    inline void setPowerModulation(const SignlalPWM heating_signal);
+
     // Zadana wartość grzania
-    float heating_power_{ 0 };
+    Watt heating_power_{ 0 };
     unsigned int power_switching_counter_{ 0 };
     // Numer pinu przypisanego do grzałki
-    const short unsigned int PIN_HEAT_SUPPLY_{ 1 };
+    const uint8_t PIN_HEAT_SUPPLY_{ PIN_SAFETY_MOCK_OUTPUT };
 };

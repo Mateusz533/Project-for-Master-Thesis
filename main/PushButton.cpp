@@ -1,21 +1,21 @@
 #include "PushButton.h"
 
-PushButton::PushButton(const short unsigned int pin) :
-  PIN_{ pin }
+PushButton::PushButton(const uint8_t pin) :
+  pin_{ pin }
 {
   // przypisanie numeru pinu w mikrosterowniku
 }
 
 void PushButton::init()
 {
-  pinMode(PIN_, INPUT);    // ustawienie przycisku jako wejście z rezystorem podciągającym
-  digitalWrite(PIN_, HIGH);
+  pinMode(pin_, INPUT);    // ustawienie przycisku jako wejście z rezystorem podciągającym
+  digitalWrite(pin_, HIGH);
 }
 
 void PushButton::readSignal()
 {
   previously_pressed_ = currently_pressed_;
-  currently_pressed_ = !digitalRead(PIN_);    // przycisk wciśnięty przyjmuje stan niski
+  currently_pressed_ = !digitalRead(pin_);    // przycisk wciśnięty przyjmuje stan niski
   if (currently_pressed_)
     ++time_of_continuous_pressing_;
   else

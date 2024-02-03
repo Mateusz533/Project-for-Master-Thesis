@@ -12,37 +12,41 @@ void SettingsController::init()
   return;
 }
 
-void SettingsController::executeCommands(const bool buttons[])
+void SettingsController::executeCommands(const Array<bool, BUTTONS_NUMBER>& buttons)
 {
   if (current_line_ == 0)
   {
-    if (buttons[UP] && !buttons[DOWN] && s_ambient_temperature < MAX_AMBIENT_TEMPERATURE_)
+    if (buttons.get(UP) && !buttons.get(DOWN) && s_ambient_temperature < MAX_AMBIENT_TEMPERATURE_)
       s_ambient_temperature += AMBIENT_TEMPERATURE_RESOLUTION_;
-    else if (!buttons[UP] && buttons[DOWN] && s_ambient_temperature > MIN_AMBIENT_TEMPERATURE_)
+    else if (!buttons.get(UP) && buttons.get(DOWN) && s_ambient_temperature > MIN_AMBIENT_TEMPERATURE_)
       s_ambient_temperature -= AMBIENT_TEMPERATURE_RESOLUTION_;
   }
   else if (current_line_ == 1)
   {
-    if (buttons[UP] && !buttons[DOWN] && s_max_heating_power < MAX_HEATING_POWER)
+    if (buttons.get(UP) && !buttons.get(DOWN) && s_max_heating_power < MAX_HEATING_POWER)
       s_max_heating_power += MAX_HEATING_POWER_RESOLUTION_;
-    else if (!buttons[UP] && buttons[DOWN] && s_max_heating_power > MAX_HEATING_POWER_RESOLUTION_)
+    else if (!buttons.get(UP) && buttons.get(DOWN) && s_max_heating_power > MAX_HEATING_POWER_RESOLUTION_)
       s_max_heating_power -= MAX_HEATING_POWER_RESOLUTION_;
   }
-  if (buttons[ACTION])
-    current_line_ = !current_line_;
+  if (buttons.get(ACTION))
+    current_line_ = (current_line_ + 1) % LCD_ROWS_NUMBER;
 }
 
-void SettingsController::getDataToDisplay(String& first_line, String& second_line) const
-{
-  first_line = String(F("Ambient:      ")) + DEGREE_SYMBOL_INDEX + F("C");
-  String str_ambient_temp(s_ambient_temperature);
-  for (unsigned int i = 0; i < str_ambient_temp.length(); ++i)
-    first_line.setCharAt(13 - i, str_ambient_temp.charAt(str_ambient_temp.length() - 1 - i));
+const char FIRST_LINE[LCD_COLUMNS_NUMBER] PROGMEM = {
+  'A', 'm', 'b', 'i', 'e', 'n', 't', ':', ' ', ' ', ' ', ' ', ' ', ' ', DEGREE_SYMBOL_INDEX, 'C'
+};
+const char SECOND_LINE[LCD_COLUMNS_NUMBER + 1] PROGMEM = "Max power:     W";
 
-  second_line = String(F("Max power:     W"));
-  String str_max_power(s_max_heating_power);
-  for (unsigned int i = 0; i < str_max_power.length(); ++i)
-    second_line.setCharAt(14 - i, str_max_power.charAt(str_max_power.length() - 1 - i));
+ScreenContent SettingsController::getDataToDisplay() const
+{
+  constexpr int LAST_DIGIT_IN_FIRST_LINE = 13;
+  constexpr int LAST_DIGIT_IN_SECOND_LINE = 14;
+
+  ScreenContent content(FIRST_LINE, SECOND_LINE);
+  content.putNumberFromEnd(s_ambient_temperature, LAST_DIGIT_IN_FIRST_LINE, 0);
+  content.putNumberFromEnd(s_max_heating_power, LAST_DIGIT_IN_SECOND_LINE, 1);
+
+  return content;
 }
 
 void SettingsController::run()

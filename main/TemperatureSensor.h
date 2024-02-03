@@ -1,24 +1,28 @@
 #pragma once
 
-#include <Arduino.h>
 #include "configuration.h"
-#include "StaticArray.h"
 #include "Queue.h"
 #include "reportError.h"
+
+constexpr unsigned int STORAGE_MULTIPLIER = 8;
+constexpr CollectionSize LONG_TERM_MEASURMENT_BUFFER_LENGTH = TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD;
+constexpr CollectionSize SHORT_TERM_MEASURMENT_BUFFER_LENGTH = TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD;
+constexpr float MIN_SN_RATIO = 0.5;
+using StorageSignal = unsigned int;
 
 // Klasa przechowująca parametry czujnika temperatury
 class TemperatureSensor
 {
   public:
     TemperatureSensor() = delete;
-    TemperatureSensor(const short unsigned int pin_temperature_sensor, const float tuning_factor, const float sensor_offset);
+    TemperatureSensor(const uint8_t pin_temperature_sensor, const float tuning_factor, const float sensor_offset);
     ~TemperatureSensor() = default;
     // Konfiguruje porty wejścia/wyjścia dla tego elementu
     void init();
     // Wykonuje pomiary temperatury i filtruje dolnoprzepustowo z określoną częstotliwością
     void measureTemperature();
     // Zwraca oszacowaną różnicę temperatur pomiędzy płytą a otoczeniem na podstawie zebranych pomiarów
-    float calculateRelativeTemperature();
+    KelvinDiff calculateRelativeTemperature();
     // Zwraca prawdę, jeśli buffor danych pomiarowych jest pełny
     bool isBufferFull() const;
     // Czyści buffor danych pomiarowych
@@ -26,10 +30,10 @@ class TemperatureSensor
 
   private:
     // Zmienne przechowujące pomiary sygnału temperatury
-    Queue<unsigned int> long_term_measurements_{ TEMPERATURE_ESTIMATION_PERIOD / TEMPERATURE_AVERAGING_PERIOD };
-    Queue<unsigned int> short_term_measurements_{ TEMPERATURE_AVERAGING_PERIOD / CYCLE_PERIOD };
+    Queue<StorageSignal, LONG_TERM_MEASURMENT_BUFFER_LENGTH> long_term_measurements_;
+    Queue<StorageSignal, SHORT_TERM_MEASURMENT_BUFFER_LENGTH> short_term_measurements_;
     // Numer pinu przypisanego do czujnika
-    const short unsigned int PIN_TEMPERATURE_SENSOR_{ 0 };
+    const uint8_t PIN_TEMPERATURE_SENSOR_{ PIN_SAFETY_MOCK_INPUT };
     // Czynnik dostrojenia wzmacniacza oraz stałe przesunięcie sygnału
     const float TUNING_FACTOR_{ 1 };
     const float SENSOR_OFFSET_{ 0 };

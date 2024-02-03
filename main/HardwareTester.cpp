@@ -41,11 +41,11 @@ void HardwareTester::testForceSensor()
 
   // Filtrowane
   static bool s_in_use = false;
-  static Queue<unsigned int>* p_force_measurements{ nullptr };
+  static Queue<AnalogSignal, 20>* p_force_measurements{ nullptr };
   if (!s_in_use)
   {
     s_in_use = true;
-    p_force_measurements = new Queue<unsigned int>(20);
+    p_force_measurements = new Queue<AnalogSignal, 20>();
   }
   p_force_measurements->push(analogRead(PIN_FORCE_SENSOR));
 
@@ -53,9 +53,9 @@ void HardwareTester::testForceSensor()
     return;
 
   // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
-  const unsigned int mean_value = p_force_measurements->mean_value();
-  const unsigned int min_value = p_force_measurements->min_value();
-  const unsigned int max_value = p_force_measurements->max_value();
+  const AnalogSignal mean_value = p_force_measurements->mean_value();
+  const AnalogSignal min_value = p_force_measurements->min_value();
+  const AnalogSignal max_value = p_force_measurements->max_value();
   p_force_measurements->clear();
 
   Serial.print(mean_value);
@@ -75,7 +75,7 @@ void HardwareTester::testTemperatureSensors()
   Serial.println();
 }
 
-void HardwareTester::testAmplifier(const short unsigned int pin_output)
+void HardwareTester::testAmplifier(const uint8_t pin_output)
 {
   //// Niefiltrowane
   // Serial.print(analogRead(pin_output));
@@ -83,11 +83,11 @@ void HardwareTester::testAmplifier(const short unsigned int pin_output)
 
   // Filtrowane
   static bool s_in_use = false;
-  static Queue<unsigned int>* p_measurements{ nullptr };
+  static Queue<AnalogSignal, 100>* p_measurements{ nullptr };
   if (!s_in_use)
   {
     s_in_use = true;
-    p_measurements = new Queue<unsigned int>(100);
+    p_measurements = new Queue<AnalogSignal, 100>();
   }
   p_measurements->push(analogRead(pin_output));
 
@@ -95,10 +95,10 @@ void HardwareTester::testAmplifier(const short unsigned int pin_output)
     return;
 
   // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
-  const unsigned int mean_value = p_measurements->mean_value();
-  const unsigned int min_value = p_measurements->min_value();
-  const unsigned int max_value = p_measurements->max_value();
-  const unsigned int median_value = p_measurements->quantile(0.5);
+  const AnalogSignal mean_value = p_measurements->mean_value();
+  const AnalogSignal min_value = p_measurements->min_value();
+  const AnalogSignal max_value = p_measurements->max_value();
+  const AnalogSignal median_value = p_measurements->quantile(0.5);
   p_measurements->clear();
 
   Serial.print(mean_value);
@@ -115,13 +115,13 @@ void HardwareTester::testHeaters()
 {
   // Filtrowane
   static bool s_in_use = false;
-  static Queue<unsigned int>* p_top_measurements{ nullptr };
-  static Queue<unsigned int>* p_bot_measurements{ nullptr };
+  static Queue<AnalogSignal, 50>* p_top_measurements{ nullptr };
+  static Queue<AnalogSignal, 50>* p_bot_measurements{ nullptr };
   if (!s_in_use)
   {
     s_in_use = true;
-    p_top_measurements = new Queue<unsigned int>(50);
-    p_bot_measurements = new Queue<unsigned int>(50);
+    p_top_measurements = new Queue<AnalogSignal, 50>();
+    p_bot_measurements = new Queue<AnalogSignal, 50>();
   }
   p_top_measurements->push(analogRead(PIN_TEMPERATURE_SENSOR_TOP));
   p_bot_measurements->push(analogRead(PIN_TEMPERATURE_SENSOR_BOT));
@@ -130,8 +130,8 @@ void HardwareTester::testHeaters()
     return;
 
   // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
-  const unsigned int top_value = p_top_measurements->quantile(0.5);
-  const unsigned int bot_value = p_bot_measurements->quantile(0.5);
+  const AnalogSignal top_value = p_top_measurements->quantile(0.5);
+  const AnalogSignal bot_value = p_bot_measurements->quantile(0.5);
   p_top_measurements->clear();
   p_bot_measurements->clear();
 
@@ -145,13 +145,13 @@ void HardwareTester::testForceSensorThermalEffect()
 {
   // Filtrowane
   static bool s_in_use = false;
-  static Queue<unsigned int>* p_force_measurements{ nullptr };
-  static Queue<unsigned int>* p_top_measurements{ nullptr };
+  static Queue<AnalogSignal, 50>* p_force_measurements{ nullptr };
+  static Queue<AnalogSignal, 50>* p_top_measurements{ nullptr };
   if (!s_in_use)
   {
     s_in_use = true;
-    p_force_measurements = new Queue<unsigned int>(50);
-    p_top_measurements = new Queue<unsigned int>(50);
+    p_force_measurements = new Queue<AnalogSignal, 50>();
+    p_top_measurements = new Queue<AnalogSignal, 50>();
   }
   p_force_measurements->push(analogRead(PIN_FORCE_SENSOR));
   p_top_measurements->push(analogRead(PIN_TEMPERATURE_SENSOR_TOP));
@@ -160,8 +160,8 @@ void HardwareTester::testForceSensorThermalEffect()
     return;
 
   // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
-  const unsigned int force_value = p_force_measurements->quantile(0.5);
-  const unsigned int top_value = p_top_measurements->quantile(0.5);
+  const AnalogSignal force_value = p_force_measurements->quantile(0.5);
+  const AnalogSignal top_value = p_top_measurements->quantile(0.5);
   p_force_measurements->clear();
   p_top_measurements->clear();
 
@@ -171,7 +171,7 @@ void HardwareTester::testForceSensorThermalEffect()
   Serial.println();
 }
 
-void HardwareTester::testTimeSynchronization(const long unsigned int timer)
+void HardwareTester::testTimeSynchronization(const unsigned long timer)
 {
   Serial.print(millis() - timer);
   Serial.println();
@@ -181,15 +181,15 @@ void HardwareTester::testAll()
 {
   // Filtrowane
   static bool s_in_use = false;
-  static Queue<unsigned int>* p_force_measurements{ nullptr };
-  static Queue<unsigned int>* p_top_measurements{ nullptr };
-  static Queue<unsigned int>* p_bot_measurements{ nullptr };
+  static Queue<AnalogSignal, 30>* p_force_measurements{ nullptr };
+  static Queue<AnalogSignal, 30>* p_top_measurements{ nullptr };
+  static Queue<AnalogSignal, 30>* p_bot_measurements{ nullptr };
   if (!s_in_use)
   {
     s_in_use = true;
-    p_force_measurements = new Queue<unsigned int>(30);
-    p_top_measurements = new Queue<unsigned int>(30);
-    p_bot_measurements = new Queue<unsigned int>(30);
+    p_force_measurements = new Queue<AnalogSignal, 30>();
+    p_top_measurements = new Queue<AnalogSignal, 30>();
+    p_bot_measurements = new Queue<AnalogSignal, 30>();
   }
   p_force_measurements->push(analogRead(PIN_FORCE_SENSOR));
   p_top_measurements->push(analogRead(PIN_TEMPERATURE_SENSOR_TOP));
@@ -199,9 +199,9 @@ void HardwareTester::testAll()
     return;
 
   // Filtrowanie szumów poprzez uśrednianie krótkookresowych odczytów
-  const unsigned int force_value = p_force_measurements->quantile(0.5);
-  const unsigned int top_value = p_top_measurements->quantile(0.5);
-  const unsigned int bot_value = p_bot_measurements->quantile(0.5);
+  const AnalogSignal force_value = p_force_measurements->quantile(0.5);
+  const AnalogSignal top_value = p_top_measurements->quantile(0.5);
+  const AnalogSignal bot_value = p_bot_measurements->quantile(0.5);
   p_force_measurements->clear();
   p_top_measurements->clear();
   p_bot_measurements->clear();

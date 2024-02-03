@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Arduino.h>
 #include "configuration.h"
 #include "SystemElement.h"
 #include "Queue.h"
@@ -22,16 +21,16 @@ class HardwareTester : public SystemElement
     // Przekazuje przez port szeregowy surowe dane o mierzonym sygnale temperatury
     void testTemperatureSensors();
     // Odczytuje sygnał z wyjścia wzmacniacza napięcia (w poziomach ADC)
-    void testAmplifier(const short unsigned int pin_output);
+    void testAmplifier(const uint8_t pin_output);
     // Przekazuje przez port szeregowy dane potrzebne do wyznaczenia charakterystyki cieplnej urządzenia
     void testHeaters();
     // Przekazuje przez port szeregowy dane o mierzonej sile nacisku w zależności od temperatury
     void testForceSensorThermalEffect();
     // Przekazuje dane o różnicy czasu w danej chwili od podanej wartości
-    void testTimeSynchronization(const long unsigned int timer);
+    void testTimeSynchronization(const unsigned long timer);
     // Przekazuje informacje zarówno o pomiarze temperatury jak i siły nacisku
     void testAll();
 
     // Licznik umożliwiający testowanie synchronizacji programu
-    long unsigned int cycle_counter_{ 0 };
+    unsigned long cycle_counter_{ 0 };
 };

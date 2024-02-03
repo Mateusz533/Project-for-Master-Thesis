@@ -13,29 +13,23 @@ void OutputInterface::init()
 
 void OutputInterface::run()
 {
-  if (index_ < LCD_COLUMNS_NUMBER)
-  {
-    lcd_.setCursor(index_, 0);
-    lcd_.print(first_line_.substring(index_, index_ + CHARS_NUMBER_));
-  }
-  else
-  {
-    lcd_.setCursor(index_ - LCD_COLUMNS_NUMBER, 1);
-    lcd_.print(second_line_.substring(index_ - LCD_COLUMNS_NUMBER, index_ + CHARS_NUMBER_ - LCD_COLUMNS_NUMBER));
-  }
-  index_ += CHARS_NUMBER_;
+  char text[CHAR_SEQUENCE_LENGTH + 1];
+  text[CHAR_SEQUENCE_LENGTH] = '\0';
+  content_.copySequence(text, index_, CHAR_SEQUENCE_LENGTH);
+  lcd_.setCursor(index_ % LCD_COLUMNS_NUMBER, index_ >= LCD_COLUMNS_NUMBER);
+  lcd_.print(text);
+  index_ += CHAR_SEQUENCE_LENGTH;
   index_ %= LCD_ROWS_NUMBER * LCD_COLUMNS_NUMBER;
 }
 
-void OutputInterface::setDisplayedData(const String& first_line, const String& second_line, const bool force_refresh)
+void OutputInterface::setDisplayedData(const ScreenContent& content, const bool force_refresh)
 {
-  first_line_ = first_line;
-  second_line_ = second_line;
+  content_ = content;
   if (force_refresh)
     index_ = 0;
 }
 
-void OutputInterface::displayIntroduction()
+inline void OutputInterface::displayIntroduction()
 {
   lcd_.setCursor(0, 0);               // ustawienie kursora w pozycji 0,0 (pierwsza kolumna, pierwszy wiersz)
   lcd_.print(F("Heating press"));     //
